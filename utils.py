@@ -3,6 +3,20 @@ import pygame
 from data import *
 from math import floor
 
+
+def rotate_pivot( original_image, origin, pivot, angle):
+
+    image_rect = original_image.get_rect(topleft = (origin[0] - pivot[0], origin[1]-pivot[1]))
+    offset_center_to_pivot = pygame.math.Vector2(origin) - image_rect.center
+
+    rotated_offset = offset_center_to_pivot.rotate(-angle)
+    rotated_image_center = (origin[0] - rotated_offset.x, origin[1] - rotated_offset.y)
+
+    rotozoom_image = pygame.transform.rotate(original_image, angle)
+    rect = rotozoom_image.get_rect(center = rotated_image_center)
+
+    return rotozoom_image,rect
+
 def cropp_img(path,frame_window_width,frame_window_height,border,start_x,start_y,frames_count,img_per_row_or_col,animation_orientation,color_key,px_scale_to_xy=None,init_rotation=0):
     pieces = []
     img = pygame.image.load(path).convert_alpha()
@@ -65,13 +79,16 @@ class Unit(pygame.sprite.Sprite):
 
         self.db = unit_data
         self.scale_down_factor=scale_down_factor
-        self.direction="WALK_RIGHT"
+        self.direction="RIGHT"
+        self.action="WALK"
 
         self.weapon=pygame.sprite.Group()
         self.weapon.add(Item(self,items_database["sword1"]))
 
+
         self.x=x
         self.y=y
+        self.blank=pygame.image.load("img/blank64x64.png").convert_alpha()
         self.fps_counter=0
         self.fps=60
         self.animation_frames={}
@@ -90,8 +107,7 @@ class Unit(pygame.sprite.Sprite):
         self.db["handle_xy"]=(floor(self.db["oryginal_handle_xy"][0]/self.scale_down_factor),floor(self.db["oryginal_handle_xy"][1]/self.scale_down_factor))
         self.db["handle_xy"]=(floor(self.db["oryginal_handle_xy"][0]/self.scale_down_factor),floor(self.db["oryginal_handle_xy"][1]/self.scale_down_factor))
 
-
-
+        self.image = self.animation_frames["IDLE"][0]
 
         self.team_name=team_name
         self.hp=100
@@ -101,11 +117,6 @@ class Unit(pygame.sprite.Sprite):
 
 
     def update(self):
-        # if self.team_name=="teamA":
-        #     color="green"
-        # else:
-        #     color="red"
-        #pygame.draw.rect(self.image, color, (0,0,self.rect.width*(self.hp/self.init_hp),2))
 
 
 
@@ -116,24 +127,50 @@ class Unit(pygame.sprite.Sprite):
             if self.animation_index >= len(self.animation_frames[self.animation_name]):
                 self.animation_index = 0
                 self.fps_counter = 0
+
+
+
         #self.image = self.animation_frames[self.animation_name][self.animation_index].copy()
-        self.image = self.animation_frames[self.animation_name][self.animation_index]
+        img = self.animation_frames[self.animation_name][self.animation_index].copy()
         self.rect = pygame.rect.Rect(self.x, self.y, self.data.animationdata[self.animation_name].frame_window_width,
                                      self.data.animationdata[self.animation_name].frame_window_height)
 
 
         self.weapon.update()
-        self.weapon.draw(self.image)
+
+        #self.weapon.draw(self.image)
+
+        self.image=self.blank.copy()
+
+        if self.direction not in ["RIGHT","DOWN"]:
+            self.weapon.draw(self.image)
+
+        self.image.blit(img,(0,0))
+
+        if self.direction  in ["RIGHT","DOWN"]:
+            self.weapon.draw(self.image)
+
+
+        if self.team_name=="teamA":
+            color="green"
+        else:
+            color="red"
+        pygame.draw.rect(self.image, color, (0,0,self.rect.width*(self.hp/self.init_hp),2))
+
+
+
 
     def move(self):
-        self.animation_name = self.direction
-        if self.direction == "WALK_RIGHT":
+        self.animation_name = self.action+"_"+self.direction
+
+
+        if self.action+"_"+self.direction == "WALK_RIGHT":
             self.x+=self.speed
-        if self.direction == "WALK_LEFT":
+        if self.action+"_"+self.direction == "WALK_LEFT":
             self.x-=self.speed
-        if self.direction == "WALK_UP":
+        if self.action+"_"+self.direction == "WALK_UP":
             self.y-=self.speed
-        if self.direction == "WALK_DOWN":
+        if self.action+"_"+self.direction == "WALK_DOWN":
             self.y+=self.speed
 
 class Item(pygame.sprite.Sprite):
@@ -164,14 +201,34 @@ class Item(pygame.sprite.Sprite):
 
     def update(self, *args, **kwargs):
         #self.rect.topleft=(self.attached_to.rect.x,self.attached_to.rect.y)
-        if self.attached_to.direction in ["WALK_RIGHT","WALK_DOWN"]:
+        if self.attached_to.action+"_"+self.attached_to.direction in ["WALK_RIGHT","WALK_DOWN"]:
             pointing_direction="right"
-            self.image = self.image = self.image_with_dir[pointing_direction]
+            img  = self.image_with_dir[pointing_direction]
         else:
             pointing_direction = "left"
-            self.image = self.image = self.image_with_dir[pointing_direction]
+            img =  self.image_with_dir[pointing_direction]
+
+
 
         attach_point_in_frame_xy=self.attached_to.data.animationdata[self.attached_to.animation_name].oryginal_handle_xy[self.attached_to.animation_index]
 
-        self.rect.topleft = (attach_point_in_frame_xy[0]-self.db["handle_xy"][pointing_direction][0],attach_point_in_frame_xy[1]-self.db["handle_xy"][pointing_direction][1])
+        #img, img_rect = rotate_pivot(img,(self.attached_to.x+self.db["handle_xy"][pointing_direction][0],self.attached_to.y+self.db["handle_xy"][pointing_direction][1]),attach_point_in_frame_xy,20)
+
+        #print(self.db["handle_xy"][pointing_direction][0],self.db["handle_xy"][pointing_direction][1])
+        #img, img_rect = rotate_pivot(img, (attach_point_in_frame_xy[0]-self.db["handle_xy"][pointing_direction][0],attach_point_in_frame_xy[1]-self.db["handle_xy"][pointing_direction][1]),(attach_point_in_frame_xy[0],attach_point_in_frame_xy[1]), 20)
+
+        print(self.db["handle_xy"][pointing_direction][0])
+        print(attach_point_in_frame_xy[0])
+
+        img, img_rect = rotate_pivot(img, (attach_point_in_frame_xy[0],attach_point_in_frame_xy[1]),
+                                     (self.db["handle_xy"][pointing_direction][0], self.db["handle_xy"][pointing_direction][1]), 0)
+
+        #self.rect.topleft = (attach_point_in_frame_xy[0]-self.db["handle_xy"][pointing_direction][0],attach_point_in_frame_xy[1]-self.db["handle_xy"][pointing_direction][1])
+
+        self.rect=img_rect
+
+        #print(self.rect)
+
+        self.image=img
+
 

@@ -93,5 +93,59 @@ animation_sprites["soldier2"] = {
     'frames_count': 6,
     'img_per_row_or_col': 6,
     'color_key': (0, 0, 0),
-    "oryginal_handle_xy": [(34, 36),(29, 32),(29, 35),(34, 36),(29, 37),(29, 38)]
-}}
+    "oryginal_handle_xy": [(31, 38),(27, 39),(27, 39),(31, 38),(37, 37),(36, 37)]
+},
+    'ATTACK_UP': {
+        'path': "img/units/soldier2/medival_knight_cross-punch_north.png",
+        'frame_window_width': 64,
+        'frame_window_height': 64,
+        'animation_orientation': "horizontal",
+        'border': 1,
+        'anim_fps': 6,
+        'start_x': 0,
+        'start_y': 0,
+        'frames_count': 6,
+        'img_per_row_or_col': 6,
+        'color_key': (0, 0, 0),
+        "oryginal_handle_xy": [(39,30), (40,34), (40,33), (34,20), (39,27), (39,31)]
+    }, 'ATTACK_DOWN': {
+        'path': "img/units/soldier2/medival_knight_cross-punch_south.png",
+        'frame_window_width': 64,
+        'frame_window_height': 64,
+        'animation_orientation': "horizontal",
+        'border': 1,
+        'anim_fps': 6,
+        'start_x': 0,
+        'start_y': 0,
+        'frames_count': 6,
+        'img_per_row_or_col': 6,
+        'color_key': (0, 0, 0),
+        "oryginal_handle_xy": [(24,28), (25,27), (24,26), (29,39), (27,33), (25,29)]
+    }, 'ATTACK_LEFT': {
+        'path': "img/units/soldier2/medival_knight_cross-punch_west.png",
+        'frame_window_width': 64,
+        'frame_window_height': 64,
+        'animation_orientation': "horizontal",
+        'border': 1,
+        'anim_fps': 6,
+        'start_x': 0,
+        'start_y': 0,
+        'frames_count': 6,
+        'img_per_row_or_col': 6,
+        'color_key': (0, 0, 0),
+        "oryginal_handle_xy": [(28,28), (32,28), (36,28), (16,30), (22,27), (27,34)]
+    }, 'ATTACK_RIGHT': {
+        'path': "img/units/soldier2/medival_knight_cross-punch_east.png",
+        'frame_window_width': 64,
+        'frame_window_height': 64,
+        'animation_orientation': "horizontal",
+        'border': 1,
+        'anim_fps': 6,
+        'start_x': 0,
+        'start_y': 0,
+        'frames_count': 6,
+        'img_per_row_or_col': 6,
+        'color_key': (0, 0, 0),
+        "oryginal_handle_xy": [(30,35), (26,35), (24,35), (47,32), (39,32), (28,36)]
+    }
+}
