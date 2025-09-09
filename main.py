@@ -4,6 +4,7 @@ import pygame
 from pygame import K_ESCAPE, K_LEFT, K_RIGHT, KSCAN_UP, K_DOWN, K_SPACE
 from utils import *
 from data import *
+from database import *
 
 pygame.init()
 
@@ -13,8 +14,10 @@ last_update_time = pygame.time.get_ticks()
 
 units=pygame.sprite.Group()
 
-units.add(Unit(100,100,"teamA",units_database["soldier1"]))
+units.add(Unit(100,100,"teamA",units_database["soldier1"],database))
 #units.add(Unit(400,300,"teamB",units_database["soldier1"]))
+
+
 
 while True:
     screen.fill("black")
@@ -25,6 +28,7 @@ while True:
 
     pygame.display.update()
     clock.tick(60)
+    database["frame_counter"]+=1
     real_fps=pygame.time.get_ticks() - last_update_time
     last_update_time = pygame.time.get_ticks()
     pygame.display.set_caption(str(floor(1000/real_fps)))

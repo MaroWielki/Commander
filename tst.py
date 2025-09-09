@@ -47,7 +47,7 @@ while True:
 
     pygame.display.update()
     clock.tick(60)
-
+    pygame.time.get_ticks()
 
     for event in pygame.event.get():
         if event.type==pygame.QUIT:

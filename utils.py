@@ -79,7 +79,7 @@ class AnimationData:
 
 
 class Unit(pygame.sprite.Sprite):
-    def __init__(self, x:int, y:int, team_name:str,unit_data:dict,scale_down_factor=1):
+    def __init__(self, x:int, y:int, team_name:str,unit_data:dict,database:dict,scale_down_factor=1):
         pygame.sprite.Sprite.__init__(self)
 
         self.db = unit_data
@@ -90,12 +90,12 @@ class Unit(pygame.sprite.Sprite):
         self.weapon=pygame.sprite.Group()
         self.weapon.add(Item(self,items_database["sword1"]))
 
-
         self.x=x
         self.y=y
         self.blank=pygame.image.load("img/blank64x64.png").convert_alpha()
         self.fps_counter=0
-        self.fps=60
+        self.fps=database["fps"]
+
         self.animation_frames={}
         self.animation_name="IDLE"
 
@@ -115,17 +115,21 @@ class Unit(pygame.sprite.Sprite):
         self.image = self.animation_frames["IDLE_"][0]
 
         self.team_name=team_name
-        self.hp=100
-        self.init_hp=100
-        self.speed=2
+        self.atsp=self.db["atsp"]
+        self.last_attack_frame_number=database["frame_counter"]
+        self.init_hp=self.db["hp"]
+        self.dmg=self.db["dmg"]
+        self.hp=self.init_hp
+        self.speed=self.db["speed"]
+        self.database=database
 
 
 
     def update(self):
 
-
-
         self.move()
+
+        ### ANIMATION
         self.fps_counter += 1
         if self.anim_fps != 0:
             self.animation_index = floor(self.fps_counter / (self.fps / self.anim_fps))
@@ -134,17 +138,14 @@ class Unit(pygame.sprite.Sprite):
                 self.fps_counter = 0
 
 
-
-        #self.image = self.animation_frames[self.animation_name][self.animation_index].copy()
         img = self.animation_frames[self.animation_name][self.animation_index].copy()
         self.rect = pygame.rect.Rect(self.x, self.y, self.data.animationdata[self.animation_name].frame_window_width,
                                      self.data.animationdata[self.animation_name].frame_window_height)
 
 
+
+        ### BLIT WEAPON
         self.weapon.update()
-
-        #self.weapon.draw(self.image)
-
         self.image=self.blank.copy()
 
         if self.direction not in ["RIGHT","DOWN"]:
@@ -155,7 +156,7 @@ class Unit(pygame.sprite.Sprite):
         if self.direction  in ["RIGHT","DOWN"]:
             self.weapon.draw(self.image)
 
-
+        ### LIFE BAR
         if self.team_name=="teamA":
             color="green"
         else:
@@ -218,22 +219,10 @@ class Item(pygame.sprite.Sprite):
         attach_point_in_frame_xy=self.attached_to.data.animationdata[self.attached_to.animation_name].oryginal_handle_xy[self.attached_to.animation_index]
         rot_in_frame=self.attached_to.data.animationdata[self.attached_to.animation_name].weapon_rotation[self.attached_to.animation_index]
 
-        #img, img_rect = rotate_pivot(img,(self.attached_to.x+self.db["handle_xy"][pointing_direction][0],self.attached_to.y+self.db["handle_xy"][pointing_direction][1]),attach_point_in_frame_xy,20)
-
-        #print(self.db["handle_xy"][pointing_direction][0],self.db["handle_xy"][pointing_direction][1])
-        #img, img_rect = rotate_pivot(img, (attach_point_in_frame_xy[0]-self.db["handle_xy"][pointing_direction][0],attach_point_in_frame_xy[1]-self.db["handle_xy"][pointing_direction][1]),(attach_point_in_frame_xy[0],attach_point_in_frame_xy[1]), 20)
 
 
-
-        img, img_rect = rotate_pivot(img, (attach_point_in_frame_xy[0],attach_point_in_frame_xy[1]),
+        self.image, self.rect = rotate_pivot(img, (attach_point_in_frame_xy[0],attach_point_in_frame_xy[1]),
                                      (self.db["handle_xy"][pointing_direction][0], self.db["handle_xy"][pointing_direction][1]), rot_in_frame)
 
-        #self.rect.topleft = (attach_point_in_frame_xy[0]-self.db["handle_xy"][pointing_direction][0],attach_point_in_frame_xy[1]-self.db["handle_xy"][pointing_direction][1])
-
-        self.rect=img_rect
-
-        #print(self.rect)
-
-        self.image=img
 
 
