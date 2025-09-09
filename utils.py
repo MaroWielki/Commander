@@ -62,6 +62,11 @@ class AnimationSingle:
         self.img_per_row_or_col = kw['img_per_row_or_col']
         self.color_key = kw['color_key']
         self.oryginal_handle_xy=kw["oryginal_handle_xy"]
+        if "weapon_rotation" in kw.keys():
+            self.weapon_rotation=kw["weapon_rotation"]
+        else:
+            self.weapon_rotation=[0]*self.frames_count
+
 
 
 class AnimationData:
@@ -79,8 +84,8 @@ class Unit(pygame.sprite.Sprite):
 
         self.db = unit_data
         self.scale_down_factor=scale_down_factor
-        self.direction="RIGHT"
-        self.action="WALK"
+        self.direction=""
+        self.action="IDLE"
 
         self.weapon=pygame.sprite.Group()
         self.weapon.add(Item(self,items_database["sword1"]))
@@ -107,7 +112,7 @@ class Unit(pygame.sprite.Sprite):
         self.db["handle_xy"]=(floor(self.db["oryginal_handle_xy"][0]/self.scale_down_factor),floor(self.db["oryginal_handle_xy"][1]/self.scale_down_factor))
         self.db["handle_xy"]=(floor(self.db["oryginal_handle_xy"][0]/self.scale_down_factor),floor(self.db["oryginal_handle_xy"][1]/self.scale_down_factor))
 
-        self.image = self.animation_frames["IDLE"][0]
+        self.image = self.animation_frames["IDLE_"][0]
 
         self.team_name=team_name
         self.hp=100
@@ -201,7 +206,7 @@ class Item(pygame.sprite.Sprite):
 
     def update(self, *args, **kwargs):
         #self.rect.topleft=(self.attached_to.rect.x,self.attached_to.rect.y)
-        if self.attached_to.action+"_"+self.attached_to.direction in ["WALK_RIGHT","WALK_DOWN"]:
+        if self.attached_to.direction in ["RIGHT","DOWN"]:
             pointing_direction="right"
             img  = self.image_with_dir[pointing_direction]
         else:
@@ -211,17 +216,17 @@ class Item(pygame.sprite.Sprite):
 
 
         attach_point_in_frame_xy=self.attached_to.data.animationdata[self.attached_to.animation_name].oryginal_handle_xy[self.attached_to.animation_index]
+        rot_in_frame=self.attached_to.data.animationdata[self.attached_to.animation_name].weapon_rotation[self.attached_to.animation_index]
 
         #img, img_rect = rotate_pivot(img,(self.attached_to.x+self.db["handle_xy"][pointing_direction][0],self.attached_to.y+self.db["handle_xy"][pointing_direction][1]),attach_point_in_frame_xy,20)
 
         #print(self.db["handle_xy"][pointing_direction][0],self.db["handle_xy"][pointing_direction][1])
         #img, img_rect = rotate_pivot(img, (attach_point_in_frame_xy[0]-self.db["handle_xy"][pointing_direction][0],attach_point_in_frame_xy[1]-self.db["handle_xy"][pointing_direction][1]),(attach_point_in_frame_xy[0],attach_point_in_frame_xy[1]), 20)
 
-        print(self.db["handle_xy"][pointing_direction][0])
-        print(attach_point_in_frame_xy[0])
+
 
         img, img_rect = rotate_pivot(img, (attach_point_in_frame_xy[0],attach_point_in_frame_xy[1]),
-                                     (self.db["handle_xy"][pointing_direction][0], self.db["handle_xy"][pointing_direction][1]), 0)
+                                     (self.db["handle_xy"][pointing_direction][0], self.db["handle_xy"][pointing_direction][1]), rot_in_frame)
 
         #self.rect.topleft = (attach_point_in_frame_xy[0]-self.db["handle_xy"][pointing_direction][0],attach_point_in_frame_xy[1]-self.db["handle_xy"][pointing_direction][1])
 

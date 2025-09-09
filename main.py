@@ -39,11 +39,15 @@ while True:
                 exit()
             if event.key == K_LEFT:
                 units.sprites()[0].direction = "LEFT"
+                units.sprites()[0].action = "WALK"
             if event.key == K_RIGHT:
                 units.sprites()[0].direction = "RIGHT"
+                units.sprites()[0].action = "WALK"
             if event.key == pygame.K_UP:
                 units.sprites()[0].direction = "UP"
+                units.sprites()[0].action = "WALK"
             if event.key == K_DOWN:
                 units.sprites()[0].direction = "DOWN"
+                units.sprites()[0].action = "WALK"
             if event.key==K_SPACE:
                 units.sprites()[0].action = "ATTACK"

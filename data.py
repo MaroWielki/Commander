@@ -28,7 +28,7 @@ items_database={
 
 animation_sprites={}
 animation_sprites["soldier2"] = {
-'IDLE': {
+'IDLE_': {
 'path': "img/units/soldier2/medival_knight_walk_south.png",
 'frame_window_width':64,
 'frame_window_height':64,
@@ -107,7 +107,8 @@ animation_sprites["soldier2"] = {
         'frames_count': 6,
         'img_per_row_or_col': 6,
         'color_key': (0, 0, 0),
-        "oryginal_handle_xy": [(39,30), (40,34), (40,33), (34,20), (39,27), (39,31)]
+        "oryginal_handle_xy": [(39,30), (40,34), (40,25), (34,20), (39,27), (39,31)],
+        "weapon_rotation":[0,0,-45,0,0,0]
     }, 'ATTACK_DOWN': {
         'path': "img/units/soldier2/medival_knight_cross-punch_south.png",
         'frame_window_width': 64,
@@ -120,7 +121,8 @@ animation_sprites["soldier2"] = {
         'frames_count': 6,
         'img_per_row_or_col': 6,
         'color_key': (0, 0, 0),
-        "oryginal_handle_xy": [(24,28), (25,27), (24,26), (29,39), (27,33), (25,29)]
+        "oryginal_handle_xy": [(24,28), (25,27), (24,26), (29,39), (27,33), (25,29)],
+        "weapon_rotation":[0,0,90,180,90,0]
     }, 'ATTACK_LEFT': {
         'path': "img/units/soldier2/medival_knight_cross-punch_west.png",
         'frame_window_width': 64,
@@ -133,7 +135,8 @@ animation_sprites["soldier2"] = {
         'frames_count': 6,
         'img_per_row_or_col': 6,
         'color_key': (0, 0, 0),
-        "oryginal_handle_xy": [(28,28), (32,28), (36,28), (16,30), (22,27), (27,34)]
+        "oryginal_handle_xy": [(28,28), (32,28), (36,28), (16,30), (22,27), (27,34)],
+        "weapon_rotation":[0,0,0,45,0,0]
     }, 'ATTACK_RIGHT': {
         'path': "img/units/soldier2/medival_knight_cross-punch_east.png",
         'frame_window_width': 64,
@@ -146,6 +149,7 @@ animation_sprites["soldier2"] = {
         'frames_count': 6,
         'img_per_row_or_col': 6,
         'color_key': (0, 0, 0),
-        "oryginal_handle_xy": [(30,35), (26,35), (24,35), (47,32), (39,32), (28,36)]
+        "oryginal_handle_xy": [(30,35), (26,35), (24,35), (47,32), (39,32), (28,36)],
+        "weapon_rotation":[0,0,0,-45,0,0]
     }
 }
