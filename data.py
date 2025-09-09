@@ -6,6 +6,7 @@ units_database={
         "img_path": "img/units/soldier1/soldier.png",
         "oryginal_handle_xy": (26, 34),
         "oryginal_size_xy": (64, 64),
+        "oryginal_hitbox_size_xy":(20,45),
         "atsp":200,
         "hp":100,
         "dmg":10,

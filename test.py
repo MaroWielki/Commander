@@ -1,12 +1,7 @@
 
-import time
+import pygame
 
-start=time.time()
-dic={"fps":0}
-fps=0
-for i in range(10**7):
-    #a=i
-    a=dic["fps"]
+pygame.init()
 
-
-print(time.time()-start)
+v2=pygame.math.Vector2(1,2)
+print(v2.distance_to((1,1)))

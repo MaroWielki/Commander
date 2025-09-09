@@ -3,7 +3,7 @@ import sys
 
 
 from pygame import K_ESCAPE, K_LEFT, K_RIGHT, KSCAN_UP, K_DOWN, K_SPACE
-from utils import *
+from my_utils import *
 from data import *
 
 pygame.init()
