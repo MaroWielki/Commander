@@ -6,10 +6,12 @@ def find_closest_enemy(unit, enemies_group: pygame.sprite.Group):
     closest_enemy_distance = 9999
     my_position_v2 = pygame.math.Vector2(unit.x, unit.y)
     for enemy in enemies_group.sprites():
+
         distance = my_position_v2.distance_to((enemy.x, enemy.y))
         if distance < closest_enemy_distance:
             closest_enemy_distance = distance
             closest_enemy = enemy
+
 
     return closest_enemy
 
@@ -18,10 +20,12 @@ def movemendAI(unit, enemies_group: pygame.sprite.Group, teammates_group: pygame
 
     enemy = find_closest_enemy(unit, enemies_group)
 
-    for collided_object_uuid in unit.db["collided_with"]:
-        if collided_object_uuid == enemy.uuid:
-            enemy=None
-    return enemy
+    ret=enemy
+    #print(unit.db["collided_with_dict"],enemy.uuid,unit.uuid,unit.team_name)
+    for dir in ["LEFT", "RIGHT", "UP", "DOWN"]:
+        if unit.db["collided_with_dict"][dir] == enemy.uuid:
+            ret=None
+    return ret
 
 def attackAI(unit, enemies_group: pygame.sprite.Group,database):
 

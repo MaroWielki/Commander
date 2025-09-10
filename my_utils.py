@@ -146,7 +146,7 @@ class Unit(pygame.sprite.Sprite):
         for team in self.database["teams"]:
             if team is not self.team_name:
                 self.enemy_team=team
-
+        self.db["collided_with_dict"]={"LEFT":None,"RIGHT":None,"UP":None,"DOWN":None}
 
 
 
@@ -154,17 +154,20 @@ class Unit(pygame.sprite.Sprite):
     def update(self):
 
 
-
         if self.move_algorithm=="movemendAI":
             self.move_target=movemendAI(self,self.database["units_"+self.enemy_team],self.database["units_"+self.team_name],self.database)
+
 
         if self.attack_algorithm=="attackAI":
             self.attack_direction = attackAI(self,self.database["units_"+self.enemy_team],self.database)
 
-        if self.attack_direction is not None:
+
+        if self.attack_direction is not None and self.last_attack_frame_number+self.atsp<self.database["frame_counter"]:
             self.action="ATTACK"
+
             self.direction=self.attack_direction
 
+        #print(self.db["collided_with_dict"])
         if self.move_target is not None:
             self.action="WALK"
             if self.x-self.move_target.x>self.speed:
@@ -175,6 +178,9 @@ class Unit(pygame.sprite.Sprite):
                 self.direction="UP"
             if self.move_target.y-self.y>self.speed:
                 self.direction="DOWN"
+        else:
+            self.action="IDLE"
+
 
         self.animation_name = self.action + "_" + self.direction
         self.move()
@@ -188,13 +194,18 @@ class Unit(pygame.sprite.Sprite):
                 self.animation_index = 0
                 self.fps_counter = 0
                 self.have_i_hit_this_anim = False
+                if self.action=="ATTACK":
+                    print("tu")
+                    self.action = "IDLE"
 
         ### ATTACK
         if self.action=="ATTACK":
             if self.animation_index == self.data.animationdata[self.animation_name].fire_at_frame and not self.have_i_hit_this_anim:
                 self.have_i_hit_this_anim=True
 
-                perform_attack(self,self.database["units_"+self.enemy_team],self.database)
+                if self.attack_direction is not None:
+                    perform_attack(self,self.database["units_"+self.enemy_team],self.database)
+                    self.last_attack_frame_number=self.database["frame_counter"]
 
 
 
@@ -234,7 +245,8 @@ class Unit(pygame.sprite.Sprite):
 
     def move(self):
 
-
+        self.db["collided_with_dict"]=check_nearby_collisions(self,self.database["units_"+self.enemy_team].sprites()+self.database["units_"+self.team_name].sprites())
+        #print(self.db["collided_with_dict"],self.uuid)
 
         old_x=self.x
         old_y=self.y
@@ -248,7 +260,7 @@ class Unit(pygame.sprite.Sprite):
             self.y+=self.speed
 
         collide_test_list=[]
-        for obj in self.database["units_teamB"]:
+        for obj in self.database["units_"+self.enemy_team]:
             if obj.uuid!=self.uuid:
                 collide_test_list.append(obj)
 
@@ -259,13 +271,16 @@ class Unit(pygame.sprite.Sprite):
         wannabe_hit_box_rect.center = wannabe_rect.center
         #collide=wannabe_hit_box_rect.collidelist(collide_test_list)
         collide = wannabe_hit_box_rect.collidelist([i.hit_box_rect for i in  collide_test_list])
-        if collide != -1:
-            self.x=old_x
-            self.y=old_y
-            self.action="IDLE"
 
-            self.move_target=None
-            self.db["collided_with"].append(collide_test_list[collide].uuid)
+        self.db["collided_with"]=[]
+        #if collide != -1:
+        if self.direction != "":
+            if self.db["collided_with_dict"][self.direction] != None:
+                self.x=old_x
+                self.y=old_y
+                self.action="IDLE"
+                self.move_target=None
+                #self.db["collided_with"].append(collide_test_list[collide].uuid)
 
 
 
@@ -328,3 +343,24 @@ def perform_attack(unit:Unit,enemies_group,database:dict):
 
     enemies_group.sprites()[col].hp-=25
 
+def check_nearby_collisions(unit:Unit,units_group):
+
+    ret = {"LEFT":None,"RIGHT":None,"UP":None,"DOWN":None}
+    for dir in ["LEFT", "RIGHT", "UP", "DOWN"]:
+        if dir =="LEFT":
+            temp_hitbox=unit.hit_box_rect.move(-unit.speed,0)
+        if dir =="RIGHT":
+
+            temp_hitbox=unit.hit_box_rect.move(unit.speed,0)
+
+        if dir =="UP":
+            temp_hitbox=unit.hit_box_rect.move(0,-unit.speed)
+        if dir =="DOWN":
+            temp_hitbox=unit.hit_box_rect.move(0,unit.speed)
+
+        hit=temp_hitbox.collidelist([i.hit_box_rect for i in units_group])
+        if hit != -1:
+            if unit.uuid != units_group[hit].uuid:
+                #print(unit.team_name,unit.uuid,units_group[hit].uuid,dir)
+                ret[dir]=units_group[hit].uuid
+    return ret

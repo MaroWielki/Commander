@@ -1,10 +1,6 @@
 
 
-d={"a":{
-    "aa":1
-},
-"b":{
-    "aa":1}
-}
+a=[1,2]
+b=[3,4]
 
-[print(d[i]) for i in d]
+print(a+b)

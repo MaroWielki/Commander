@@ -59,17 +59,17 @@ while True:
             if event.key == K_ESCAPE:
                 pygame.quit()
                 exit()
-            # if event.key == K_LEFT:
-            #     units.sprites()[0].direction = "LEFT"
-            #     units.sprites()[0].action = "WALK"
-            # if event.key == K_RIGHT:
-            #     units.sprites()[0].direction = "RIGHT"
-            #     units.sprites()[0].action = "WALK"
-            # if event.key == pygame.K_UP:
-            #     units.sprites()[0].direction = "UP"
-            #     units.sprites()[0].action = "WALK"
-            # if event.key == K_DOWN:
-            #     units.sprites()[0].direction = "DOWN"
-            #     units.sprites()[0].action = "WALK"
-            # if event.key==K_SPACE:
-            #     units.sprites()[0].action = "ATTACK"
+            if event.key == K_LEFT:
+                database["units_teamB"].sprites()[0].direction = "LEFT"
+                database["units_teamB"].sprites()[0].action = "WALK"
+            if event.key == K_RIGHT:
+                database["units_teamB"].sprites()[0].direction = "RIGHT"
+                database["units_teamB"].sprites()[0].action = "WALK"
+            if event.key == pygame.K_UP:
+                database["units_teamB"].sprites()[0].direction = "UP"
+                database["units_teamB"].sprites()[0].action = "WALK"
+            if event.key == K_DOWN:
+                database["units_teamB"].sprites()[0].direction = "DOWN"
+                database["units_teamB"].sprites()[0].action = "WALK"
+            if event.key==K_SPACE:
+                database["units_teamB"].sprites()[0].action = "ATTACK"

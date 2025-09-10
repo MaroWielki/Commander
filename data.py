@@ -7,7 +7,7 @@ units_database={
         "oryginal_handle_xy": (26, 34),
         "oryginal_size_xy": (64, 64),
         "oryginal_hitbox_size_xy":(20,45),
-        "atsp":200,
+        "atsp":120,
         "hp":100,
         "dmg":10,
         "speed":2
