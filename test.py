@@ -1,7 +1,10 @@
 
-import pygame
 
-pygame.init()
+d={"a":{
+    "aa":1
+},
+"b":{
+    "aa":1}
+}
 
-v2=pygame.math.Vector2(1,2)
-print(v2.distance_to((1,1)))
+[print(d[i]) for i in d]

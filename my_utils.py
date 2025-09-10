@@ -2,6 +2,8 @@
 import pygame
 from data import *
 from math import floor
+import uuid
+from ai import *
 
 
 
@@ -85,15 +87,17 @@ class AnimationData:
 
 
 class Unit(pygame.sprite.Sprite):
-    def __init__(self, x:int, y:int, team_name:str,unit_data:dict,database:dict,scale_down_factor=1,move_algorithm=None):
+    def __init__(self, x:int, y:int, team_name:str,unit_data:dict,database:dict,scale_down_factor=1,move_algorithm=None,attack_algorithm=None):
         pygame.sprite.Sprite.__init__(self)
 
+        self.uuid=uuid.uuid1()
         self.db = unit_data
         self.move_algorithm=move_algorithm
+        self.attack_algorithm=attack_algorithm
         self.scale_down_factor=scale_down_factor
         self.direction=""
         self.action="IDLE"
-
+        self.db["collided_with"]=[]
         self.weapon=pygame.sprite.Group()
         self.weapon.add(Item(self,items_database["sword1"]))
 
@@ -104,7 +108,7 @@ class Unit(pygame.sprite.Sprite):
         self.fps=database["fps"]
 
         self.animation_frames={}
-        self.animation_name="IDLE"
+        self.animation_name="IDLE_"
 
         self.data=AnimationData(animation_sprites["soldier2"],"soldier2")
         for anim_name in self.data.animationdata:
@@ -129,32 +133,50 @@ class Unit(pygame.sprite.Sprite):
         self.hp=self.init_hp
         self.speed=self.db["speed"]
         self.database=database
-        self.move_target_xy=None
+        self.move_target=None
         self.hit_box_rect = pygame.rect.Rect(0,0,self.db["oryginal_hitbox_size_xy"][0],self.db["oryginal_hitbox_size_xy"][1])
+        self.rect = pygame.rect.Rect(self.x, self.y, self.data.animationdata[self.animation_name].frame_window_width,
+                                     self.data.animationdata[self.animation_name].frame_window_height)
+
+        self.attack_hit_box={}
+        self.attack_direction=None
+        self.have_i_hit_this_anim = False
+
+
+        for team in self.database["teams"]:
+            if team is not self.team_name:
+                self.enemy_team=team
+
+
 
 
 
     def update(self):
-        for team in self.database["teams"]:
-            if team is not self.team_name:
-                enemy_team=team
+
+
 
         if self.move_algorithm=="movemendAI":
-            self.move_target_xy=movemendAI(self,self.database["units_"+enemy_team],self.database["units_"+self.team_name],self.database)
+            self.move_target=movemendAI(self,self.database["units_"+self.enemy_team],self.database["units_"+self.team_name],self.database)
 
-        if self.move_target_xy is not None:
+        if self.attack_algorithm=="attackAI":
+            self.attack_direction = attackAI(self,self.database["units_"+self.enemy_team],self.database)
+
+        if self.attack_direction is not None:
+            self.action="ATTACK"
+            self.direction=self.attack_direction
+
+        if self.move_target is not None:
             self.action="WALK"
-            if self.x-self.move_target_xy[0]>self.speed:
+            if self.x-self.move_target.x>self.speed:
                 self.direction="LEFT"
-            if self.move_target_xy[0]-self.x>self.speed:
+            if self.move_target.x-self.x>self.speed:
                 self.direction="RIGHT"
-            if self.y-self.move_target_xy[1]>self.speed:
+            if self.y-self.move_target.y>self.speed:
                 self.direction="UP"
-            if self.move_target_xy[1]-self.y>self.speed:
+            if self.move_target.y-self.y>self.speed:
                 self.direction="DOWN"
 
-
-
+        self.animation_name = self.action + "_" + self.direction
         self.move()
 
 
@@ -165,11 +187,21 @@ class Unit(pygame.sprite.Sprite):
             if self.animation_index >= len(self.animation_frames[self.animation_name]):
                 self.animation_index = 0
                 self.fps_counter = 0
+                self.have_i_hit_this_anim = False
+
+        ### ATTACK
+        if self.action=="ATTACK":
+            if self.animation_index == self.data.animationdata[self.animation_name].fire_at_frame and not self.have_i_hit_this_anim:
+                self.have_i_hit_this_anim=True
+
+                perform_attack(self,self.database["units_"+self.enemy_team],self.database)
+
+
 
 
         img = self.animation_frames[self.animation_name][self.animation_index].copy()
-        self.rect = pygame.rect.Rect(self.x, self.y, self.data.animationdata[self.animation_name].frame_window_width,
-                                     self.data.animationdata[self.animation_name].frame_window_height)
+
+        self.rect.center=(self.x,self.y)
         self.hit_box_rect.center = self.rect.center
 
 
@@ -201,10 +233,6 @@ class Unit(pygame.sprite.Sprite):
 
 
     def move(self):
-        self.animation_name = self.action+"_"+self.direction
-
-
-
 
 
 
@@ -221,18 +249,26 @@ class Unit(pygame.sprite.Sprite):
 
         collide_test_list=[]
         for obj in self.database["units_teamB"]:
-            collide_test_list.append(obj.hit_box_rect)
+            if obj.uuid!=self.uuid:
+                collide_test_list.append(obj)
 
         wannabe_rect = pygame.rect.Rect(self.x, self.y, self.data.animationdata[self.animation_name].frame_window_width,
                                      self.data.animationdata[self.animation_name].frame_window_height)
+        wannabe_rect.center=(self.x,self.y)
         wannabe_hit_box_rect=self.hit_box_rect
         wannabe_hit_box_rect.center = wannabe_rect.center
-        if wannabe_hit_box_rect.collidelist(collide_test_list) != -1:
+        #collide=wannabe_hit_box_rect.collidelist(collide_test_list)
+        collide = wannabe_hit_box_rect.collidelist([i.hit_box_rect for i in  collide_test_list])
+        if collide != -1:
             self.x=old_x
             self.y=old_y
             self.action="IDLE"
-            self.move_target_xy=None
-            print("asd",self.team_name)
+
+            self.move_target=None
+            self.db["collided_with"].append(collide_test_list[collide].uuid)
+
+
+
 
 
 
@@ -242,6 +278,7 @@ class Item(pygame.sprite.Sprite):
     def __init__(self,attached_to:Unit,item:dict,scale_down_factor=2.5):
         pygame.sprite.Sprite.__init__(self)
 
+        self.uuid = uuid.uuid1()
         self.scale_down_factor=scale_down_factor
         self.attached_to = attached_to
         self.db=item
@@ -284,22 +321,10 @@ class Item(pygame.sprite.Sprite):
                                      (self.db["handle_xy"][pointing_direction][0], self.db["handle_xy"][pointing_direction][1]), rot_in_frame)
 
 
-def find_closest_enemy(unit:Unit,enemies_group:pygame.sprite.Group):
-    closest_enemy=None
-    closest_enemy_distance=9999
-    my_position_v2=pygame.math.Vector2(unit.x,unit.y)
-    for enemy in enemies_group.sprites():
-        distance = my_position_v2.distance_to((enemy.x,enemy.y))
-        if distance<closest_enemy_distance:
-            closest_enemy_distance=distance
-            closest_enemy=enemy
+def perform_attack(unit:Unit,enemies_group,database:dict):
 
-    return enemy
+    dir=unit.attack_direction
+    col = unit.attack_hit_box[dir].collidelist([i.hit_box_rect for i in enemies_group.sprites()])
 
+    enemies_group.sprites()[col].hp-=25
 
-
-def movemendAI(unit:Unit,enemies_group:pygame.sprite.Group,teammates_group:pygame.sprite.Group,database):
-
-    enemy=find_closest_enemy(unit,enemies_group)
-
-    return enemy.x,enemy.y

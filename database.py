@@ -1,4 +1,5 @@
 database={
     "fps":60,
-    "frame_counter":0
+    "frame_counter":0,
+    "teams":["teamA","teamB"]
 }

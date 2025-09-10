@@ -25,7 +25,9 @@ items_database={
             "img_path":"img/weapon/sword1_right.png",
             "oryginal_handle_xy":(21,48),
             "oryginal_size_xy":(64,64)
-        }
+        },
+        "attack_range": 15
+
     }
 
 }
@@ -34,6 +36,62 @@ items_database={
 animation_sprites={}
 animation_sprites["soldier2"] = {
 'IDLE_': {
+'path': "img/units/soldier2/medival_knight_walk_south.png",
+'frame_window_width':64,
+'frame_window_height':64,
+'animation_orientation':"horizontal",
+'border':1,
+'anim_fps':6,
+'start_x':0,
+'start_y':0,
+'frames_count':1,
+'img_per_row_or_col':6,
+'color_key':(0,0,0),
+"oryginal_handle_xy": [(26, 34)]
+},
+'IDLE_RIGHT': {
+'path': "img/units/soldier2/medival_knight_walk_east.png",
+'frame_window_width':64,
+'frame_window_height':64,
+'animation_orientation':"horizontal",
+'border':1,
+'anim_fps':6,
+'start_x':0,
+'start_y':0,
+'frames_count':1,
+'img_per_row_or_col':6,
+'color_key':(0,0,0),
+"oryginal_handle_xy": [(26, 34)]
+},
+'IDLE_LEFT': {
+'path': "img/units/soldier2/medival_knight_walk_west.png",
+'frame_window_width':64,
+'frame_window_height':64,
+'animation_orientation':"horizontal",
+'border':1,
+'anim_fps':6,
+'start_x':0,
+'start_y':0,
+'frames_count':1,
+'img_per_row_or_col':6,
+'color_key':(0,0,0),
+"oryginal_handle_xy": [(26, 34)]
+},
+'IDLE_UP': {
+'path': "img/units/soldier2/medival_knight_walk_north.png",
+'frame_window_width':64,
+'frame_window_height':64,
+'animation_orientation':"horizontal",
+'border':1,
+'anim_fps':6,
+'start_x':0,
+'start_y':0,
+'frames_count':1,
+'img_per_row_or_col':6,
+'color_key':(0,0,0),
+"oryginal_handle_xy": [(26, 34)]
+},
+'IDLE_DOWN': {
 'path': "img/units/soldier2/medival_knight_walk_south.png",
 'frame_window_width':64,
 'frame_window_height':64,
@@ -110,6 +168,7 @@ animation_sprites["soldier2"] = {
         'start_x': 0,
         'start_y': 0,
         'frames_count': 6,
+        "fire_at_frame":4,
         'img_per_row_or_col': 6,
         'color_key': (0, 0, 0),
         "oryginal_handle_xy": [(39,30), (40,34), (40,25), (34,20), (39,27), (39,31)],
@@ -124,6 +183,7 @@ animation_sprites["soldier2"] = {
         'start_x': 0,
         'start_y': 0,
         'frames_count': 6,
+        "fire_at_frame": 4,
         'img_per_row_or_col': 6,
         'color_key': (0, 0, 0),
         "oryginal_handle_xy": [(24,28), (25,27), (24,26), (29,39), (27,33), (25,29)],
@@ -138,6 +198,7 @@ animation_sprites["soldier2"] = {
         'start_x': 0,
         'start_y': 0,
         'frames_count': 6,
+        "fire_at_frame": 4,
         'img_per_row_or_col': 6,
         'color_key': (0, 0, 0),
         "oryginal_handle_xy": [(28,28), (32,28), (36,28), (16,30), (22,27), (27,34)],
@@ -152,6 +213,7 @@ animation_sprites["soldier2"] = {
         'start_x': 0,
         'start_y': 0,
         'frames_count': 6,
+        "fire_at_frame": 4,
         'img_per_row_or_col': 6,
         'color_key': (0, 0, 0),
         "oryginal_handle_xy": [(30,35), (26,35), (24,35), (47,32), (39,32), (28,36)],
