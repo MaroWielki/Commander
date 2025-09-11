@@ -21,10 +21,16 @@ def movemendAI(unit, enemies_group: pygame.sprite.Group, teammates_group: pygame
     enemy = find_closest_enemy(unit, enemies_group)
 
     ret=enemy
-    #print(unit.db["collided_with_dict"],enemy.uuid,unit.uuid,unit.team_name)
-    for dir in ["LEFT", "RIGHT", "UP", "DOWN"]:
-        if unit.db["collided_with_dict"][dir] == enemy.uuid:
-            ret=None
+
+    #for dir in ["LEFT", "RIGHT", "UP", "DOWN"]:
+    #    if unit.db["collided_with_dict"][dir] == enemy.uuid:
+    #        ret=None
+
+    if ret is not None:
+
+        #print(unit.id,ret.id, unit.db["collided_with_dict"])
+        if ret.id  in get_all_coliding_units(unit.db["collided_with_dict"]):
+            ret =None
     return ret
 
 def attackAI(unit, enemies_group: pygame.sprite.Group,database):
@@ -57,6 +63,12 @@ def find_enemies_in_range(unit, enemies_group:pygame.sprite.Group):
     for dir in ["LEFT", "RIGHT", "UP", "DOWN"]:
         col = unit.attack_hit_box[dir].collidelist([i.hit_box_rect for i in  enemies_group.sprites()])
         if col !=-1:
-            enemies_in_range_dict[dir]=enemies_group.sprites()[col].uuid
+            enemies_in_range_dict[dir]=enemies_group.sprites()[col].id
 
     return enemies_in_range_dict
+
+def get_all_coliding_units(col:dict):
+    ret=[]
+    for dir in ["LEFT", "RIGHT", "UP", "DOWN"]:
+        ret+=col[dir]
+    return ret
