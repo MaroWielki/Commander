@@ -159,16 +159,22 @@ class Unit(pygame.sprite.Sprite):
 
         if self.move_algorithm=="movemendAI":
             self.move_target=movemendAI(self,self.database["units_"+self.enemy_team],self.database["units_"+self.team_name],self.database)
+        if self.move_algorithm=="movemendAI_B":
+            self.move_target=movemendAI_B(self,self.database["units_"+self.enemy_team],self.database["units_"+self.team_name],self.database)
 
 
-        if self.move_target is not None:
+
+        if self.move_target is not None and type(self.move_target)==Unit:
 
             if determin_walk_direction(self) is not None:
                 self.action="WALK"
                 self.direction=determin_walk_direction(self)
+        elif self.move_target is not None and type(self.move_target)==str:
+            pass
         else:
             self.action="IDLE"
             self.move_target=None
+
 
 
 

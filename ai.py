@@ -15,6 +15,8 @@ def find_closest_enemy(unit, enemies_group: pygame.sprite.Group):
 
     return closest_enemy
 
+def movemendAI_B(unit, enemies_group: pygame.sprite.Group, teammates_group: pygame.sprite.Group, database):
+    return "asd"
 
 def movemendAI(unit, enemies_group: pygame.sprite.Group, teammates_group: pygame.sprite.Group, database):
 
