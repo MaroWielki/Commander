@@ -10,6 +10,7 @@ from database import *
 
 pygame.init()
 
+MyRealFPS = RealFPS(50)
 screen=pygame.display.set_mode((800,600))
 clock = pygame.time.Clock()
 last_update_time = pygame.time.get_ticks()
@@ -18,8 +19,16 @@ database["units_teamA"]=pygame.sprite.Group()
 database["units_teamB"]=pygame.sprite.Group()
 
 database["units_teamA"].add(Unit(100,100,"teamA",units_database["soldier1"],database,move_algorithm="movemendAI",attack_algorithm="attackAI",id="AAA"))
-database["units_teamB"].add(Unit(400,300,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI_B",id="BBB"))
+database["units_teamA"].add(Unit(200,100,"teamA",units_database["soldier1"],database,move_algorithm="movemendAI",attack_algorithm="attackAI",id="AAAA"))
+#database["units_teamB"].add(Unit(400,300,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI_B",id="BBB"))
+database["units_teamB"].add(Unit(600,300,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI",attack_algorithm="attackAI",id="BBB"))
+database["units_teamB"].add(Unit(600,400,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI",attack_algorithm="attackAI",id="BBBB"))
 
+
+for i in range(10):
+    database["units_teamA"].add(
+        Unit(i*50, 100, "teamA", units_database["soldier1"], database, move_algorithm="movemendAI",
+             attack_algorithm="attackAI", id=str(i)))
 
 
 while True:
@@ -33,24 +42,33 @@ while True:
     database["units_teamB"].draw(screen)
 
 
-    ###DEBUG
-    for u in database["units_teamA"].sprites():
-        pygame.draw.rect(screen,"white",u.hit_box_rect,1)
-    for u in database["units_teamB"].sprites():
-        pygame.draw.rect(screen,"white",u.hit_box_rect,1)
+    remove_units(database)
 
-    for u in database["units_teamA"].sprites():
-        for dir in database["possible_directions_8"]:
-            pygame.draw.rect(screen,"white",u.attack_hit_box[dir],1)
+    ###DEBUG
+    debug=False
+    #debug=True
+    if debug==True:
+        for u in database["units_teamA"].sprites():
+            pygame.draw.rect(screen,"white",u.hit_box_rect,1)
+        for u in database["units_teamB"].sprites():
+            pygame.draw.rect(screen,"white",u.hit_box_rect,1)
+
+        for u in database["units_teamA"].sprites():
+            for dir in database["possible_directions_8"]:
+                pygame.draw.rect(screen,"white",u.attack_hit_box[dir],1)
 
 
 
     pygame.display.update()
     clock.tick(60)
     database["frame_counter"]+=1
-    real_fps=pygame.time.get_ticks() - last_update_time
+
+
+    #real_fps=pygame.time.get_ticks() - last_update_time
+    MyRealFPS.add(pygame.time.get_ticks() - last_update_time)
     last_update_time = pygame.time.get_ticks()
-    pygame.display.set_caption(str(floor(1000/real_fps)))
+    #print(MyRealFPS.get())
+    pygame.display.set_caption(str(floor(1000/MyRealFPS.get())))
 
     for event in pygame.event.get():
         if event.type==pygame.QUIT:

@@ -1,8 +1,8 @@
+a=[1,2,3]
 
-
-a=[1,2]
-b=a.copy()
-
-b[0]=7
+a.pop(0)
+a.append(4)
 
 print(a)
+
+print(sum(a))

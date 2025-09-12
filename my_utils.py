@@ -1,3 +1,4 @@
+from os import spawnl
 
 import pygame
 from data import *
@@ -6,6 +7,20 @@ import uuid
 from ai import *
 from copy import deepcopy
 
+class RealFPS:
+    def __init__(self,span):
+        self.queue=[]
+        self.span=span
+    def add(self,item):
+
+        if len(self.queue)<self.span:
+            self.queue.append(item)
+        else:
+            self.queue.pop(0)
+            self.queue.append(item)
+    def get(self):
+
+        return sum(self.queue) / len(self.queue)
 
 
 def rotate_pivot( original_image, origin, pivot, angle):
@@ -97,6 +112,7 @@ class Unit(pygame.sprite.Sprite):
         self.attack_algorithm=attack_algorithm
         self.scale_down_factor=scale_down_factor
         self.direction=""
+        self.to_be_removed=False
         self.action="IDLE"
         self.direction="DOWN"
         self.db["collided_with"]=[]
@@ -116,7 +132,7 @@ class Unit(pygame.sprite.Sprite):
         for anim_name in self.data.animationdata:
             anim_data=self.data.animationdata[anim_name]
             self.animation_frames[anim_name] = cropp_img(anim_data.path,anim_data.frame_window_width,anim_data.frame_window_height,anim_data.border,anim_data.start_x,anim_data.start_y,anim_data.frames_count,anim_data.img_per_row_or_col,anim_data.animation_orientation,anim_data.color_key)
-        self.anim_fps =8
+        self.anim_fps =1
 
 
         self.db["size_xy"]=(floor(self.db["oryginal_size_xy"][0]/self.scale_down_factor),floor(self.db["oryginal_size_xy"][1]/self.scale_down_factor))
@@ -186,34 +202,22 @@ class Unit(pygame.sprite.Sprite):
             self.action="ATTACK"
             self.direction=self.attack_direction
 
-
-
-        #
-        # if self.move_target is not None and type(self.move_target)==Unit and self.action in ["IDLE","WALK"]:
-        #
-        #     if determin_walk_direction(self) is not None:
-        #         self.action="WALK"
-        #         self.direction=determin_walk_direction(self)
-        # elif self.move_target is not None and type(self.move_target)==str:
-        #     pass
-        #
-        # elif self.attack_direction !=None:
-        #     print(self.attack_direction)
-        #     self.action = "ATTACK"
-        #
-        # else:
-        #     self.action="IDLE"
-        #     self.move_target=None
-
+        if self.hp<1:
+            self.action = "DEATH"
 
 
         self.move()
 
 
+        if self.action+"_"+self.direction != self.animation_name :
+            self.fps_counter=0   # Start new animation from frame 0
         self.animation_name=self.action+"_"+self.direction
+        self.anim_fps=self.data.animationdata[self.animation_name].anim_fps
+
         ### ANIMATION
         self.fps_counter += 1
         if self.anim_fps != 0:
+
             self.animation_index = floor(self.fps_counter / (self.fps / self.anim_fps))
             if self.animation_index >= len(self.animation_frames[self.animation_name]):
                 self.animation_index = 0
@@ -222,6 +226,8 @@ class Unit(pygame.sprite.Sprite):
                 if self.action=="ATTACK":
                     print("tu")
                     self.action = "IDLE"
+                if self.action=="DEATH":
+                    self.to_be_removed=True
 
         ### ATTACK ANIMATION
         if self.action=="ATTACK":
@@ -231,6 +237,7 @@ class Unit(pygame.sprite.Sprite):
                 if self.attack_direction is not None:
                     perform_attack(self,self.database["units_"+self.enemy_team],self.database)
                     self.last_attack_frame_number=self.database["frame_counter"]
+
 
 
         img = self.animation_frames[self.animation_name][self.animation_index].copy()
@@ -267,10 +274,17 @@ class Unit(pygame.sprite.Sprite):
 
         if self.action=="WALK":
 
-            new_xy=move_xy((self.rect.center),self.direction,self.speed)
 
-            self.rect.center=new_xy
-            self.hit_box_rect.center=new_xy
+            new_xy=move_xy((self.rect.center),self.direction,self.speed)
+            tmp_rect= self.hit_box_rect.copy()
+            tmp_rect.center=new_xy
+            all_units_list=self.database["units_"+self.enemy_team].sprites()+self.database["units_"+self.team_name].sprites()
+
+
+            if tmp_rect.collidelist([i.hit_box_rect for i in all_units_list if i.id!=self.id]) ==-1:
+
+                self.rect.center=new_xy
+                self.hit_box_rect.center=new_xy
 
 
 
@@ -399,3 +413,14 @@ def determin_walk_direction(unit:Unit):
 
 
     return ret
+
+def remove_units(database):
+    for unit in database["units_teamA"]:
+        if unit.to_be_removed == True:
+            unit.remove(database["units_teamA"])
+    for unit in database["units_teamB"]:
+        if unit.to_be_removed == True:
+            unit.remove(database["units_teamB"])
+
+
+

@@ -50,7 +50,8 @@ def attackAI(unit, enemies_group: pygame.sprite.Group,database):
     enemies_in_range_dict=find_enemies_in_range(unit, enemies_group,database)
 
     ret=None
-    for dir in database["possible_directions_8"]:
+
+    for dir in list(reversed(database["possible_directions_8"])):
         if enemies_in_range_dict[dir] !=[]:
             ret=dir
 
