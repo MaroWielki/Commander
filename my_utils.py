@@ -4,6 +4,7 @@ from data import *
 from math import floor
 import uuid
 from ai import *
+from copy import deepcopy
 
 
 
@@ -97,6 +98,7 @@ class Unit(pygame.sprite.Sprite):
         self.scale_down_factor=scale_down_factor
         self.direction=""
         self.action="IDLE"
+        self.direction="DOWN"
         self.db["collided_with"]=[]
         self.weapon=pygame.sprite.Group()
         self.weapon.add(Item(self,items_database["sword1"]))
@@ -146,7 +148,8 @@ class Unit(pygame.sprite.Sprite):
         for team in self.database["teams"]:
             if team is not self.team_name:
                 self.enemy_team=team
-        self.db["collided_with_dict"]={"LEFT":[],"RIGHT":[],"UP":[],"DOWN":[]}
+
+        self.db["collided_with_dict"]=deepcopy(self.database["blank_directions"])
 
         self.rect.center=(self.x,self.y)
         self.hit_box_rect.center = self.rect.center
@@ -162,29 +165,45 @@ class Unit(pygame.sprite.Sprite):
         if self.move_algorithm=="movemendAI_B":
             self.move_target=movemendAI_B(self,self.database["units_"+self.enemy_team],self.database["units_"+self.team_name],self.database)
 
-
-
-        if self.move_target is not None and type(self.move_target)==Unit:
-
-            if determin_walk_direction(self) is not None:
-                self.action="WALK"
-                self.direction=determin_walk_direction(self)
-        elif self.move_target is not None and type(self.move_target)==str:
-
-            pass
-        else:
-            self.action="IDLE"
-            self.move_target=None
-
-
-
-
         if self.attack_algorithm=="attackAI":
             self.attack_direction = attackAI(self,self.database["units_"+self.enemy_team],self.database)
 
 
-        ### CHECK NEARBY COLLISIONS
 
+        #determin action
+
+        self.action="IDLE"
+        if self.move_target is not None:
+            if type(self.move_target)==Unit:
+                walk_dir=determin_walk_direction(self)
+                if walk_dir is not None:
+                    self.action="WALK"
+                    self.direction=walk_dir
+            else:
+                self.action="WALK"
+
+        if self.attack_direction is not None:
+            self.action="ATTACK"
+            self.direction=self.attack_direction
+
+
+
+        #
+        # if self.move_target is not None and type(self.move_target)==Unit and self.action in ["IDLE","WALK"]:
+        #
+        #     if determin_walk_direction(self) is not None:
+        #         self.action="WALK"
+        #         self.direction=determin_walk_direction(self)
+        # elif self.move_target is not None and type(self.move_target)==str:
+        #     pass
+        #
+        # elif self.attack_direction !=None:
+        #     print(self.attack_direction)
+        #     self.action = "ATTACK"
+        #
+        # else:
+        #     self.action="IDLE"
+        #     self.move_target=None
 
 
 
@@ -220,12 +239,12 @@ class Unit(pygame.sprite.Sprite):
         self.weapon.update()
         self.image=self.blank.copy()
 
-        if self.direction not in ["RIGHT","DOWN"]:
+        if self.direction not in ["RIGHT","DOWN","RIGHTDOWN","LEFTDOWN"]:
             self.weapon.draw(self.image)
 
         self.image.blit(img,(0,0))
 
-        if self.direction  in ["RIGHT","DOWN"]:
+        if self.direction  in ["RIGHT","DOWN","RIGHTDOWN","LEFTDOWN"]:
             self.weapon.draw(self.image)
 
         ### LIFE BAR
@@ -247,6 +266,7 @@ class Unit(pygame.sprite.Sprite):
 
 
         if self.action=="WALK":
+
             new_xy=move_xy((self.rect.center),self.direction,self.speed)
 
             self.rect.center=new_xy
@@ -287,7 +307,7 @@ class Item(pygame.sprite.Sprite):
 
     def update(self, *args, **kwargs):
         #self.rect.topleft=(self.attached_to.rect.x,self.attached_to.rect.y)
-        if self.attached_to.direction in ["RIGHT","DOWN"]:
+        if self.attached_to.direction in ["RIGHT","DOWN","RIGHTDOWN","LEFTDOWN"]:
             pointing_direction="right"
             img  = self.image_with_dir[pointing_direction]
         else:
@@ -314,8 +334,8 @@ def perform_attack(unit:Unit,enemies_group,database:dict):
 
 def check_nearby_collisions(unit:Unit,units_group):
 
-    ret = {"LEFT":[],"RIGHT":[],"UP":[],"DOWN":[]}
-    for dir in ["LEFT", "RIGHT", "UP", "DOWN"]:
+    ret = deepcopy(unit.database["blank_directions"])
+    for dir in unit.database["possible_directions"]:
 
         if dir =="LEFT":
             temp_hitbox=unit.hit_box_rect.move(-unit.speed,0)
@@ -329,14 +349,18 @@ def check_nearby_collisions(unit:Unit,units_group):
         hit=temp_hitbox.collidelist([i.hit_box_rect for i in units_group])
         if hit != -1:
             if unit.id != units_group[hit].id:
-                #print(unit.team_name,unit.id,units_group[hit].id,dir)
 
                 ret[dir]+=[units_group[hit].id]
+
+
+
 
     return ret
 
 
 def move_xy(xy:tuple,direction:str,speed:int):
+
+
     if direction=="LEFT":
         ret= xy[0]-speed,xy[1]
     if direction == "RIGHT":
@@ -345,6 +369,18 @@ def move_xy(xy:tuple,direction:str,speed:int):
         ret= xy[0], xy[1]-speed
     if direction == "DOWN":
         ret= xy[0] , xy[1]+speed
+
+    speed_diag=(speed/2)**(1/2)
+    if direction=="LEFTUP":
+        ret= xy[0]-speed_diag,xy[1]-speed_diag
+    if direction == "LEFTDOWN":
+        ret= xy[0] - speed_diag, xy[1]+speed_diag
+    if direction == "RIGHTUP":
+        ret= xy[0]+speed_diag, xy[1]-speed_diag
+    if direction == "RIGHTDOWN":
+        ret= xy[0]+speed_diag , xy[1]+speed_diag
+
+
     return ret
 
 def determin_walk_direction(unit:Unit):
@@ -355,4 +391,11 @@ def determin_walk_direction(unit:Unit):
     if target_xy[0]>start_xy[0] : ret = "RIGHT"
     if target_xy[1]<start_xy[1]: ret="UP"
     if target_xy[1]>start_xy[1] : ret = "DOWN"
+
+    if target_xy[0]<start_xy[0] and target_xy[1]<start_xy[1] : ret="LEFTUP"
+    if target_xy[0] < start_xy[0] and target_xy[1]>start_xy[1]: ret = "LEFTDOWN"
+    if target_xy[0]>start_xy[0] and target_xy[1]<start_xy[1]: ret = "RIGHTUP"
+    if target_xy[0]>start_xy[0] and target_xy[1]>start_xy[1]: ret = "RIGHTDOWN"
+
+
     return ret

@@ -1,6 +1,8 @@
 
 
 a=[1,2]
-b=[3,4]
+b=a.copy()
 
-print(a+b)
+b[0]=7
+
+print(a)

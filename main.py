@@ -40,8 +40,9 @@ while True:
         pygame.draw.rect(screen,"white",u.hit_box_rect,1)
 
     for u in database["units_teamA"].sprites():
-        for dir in ["LEFT", "RIGHT", "UP", "DOWN"]:
+        for dir in database["possible_directions_8"]:
             pygame.draw.rect(screen,"white",u.attack_hit_box[dir],1)
+
 
 
     pygame.display.update()

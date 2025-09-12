@@ -4,8 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="beefaac3-6d32-4740-9193-edcf3fc2d12a" name="Changes" comment="sync">
+    <list default="true" id="beefaac3-6d32-4740-9193-edcf3fc2d12a" name="Changes" comment="working so so - need to add more directions">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ai.py" beforeDir="false" afterPath="$PROJECT_DIR$/ai.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/data.py" beforeDir="false" afterPath="$PROJECT_DIR$/data.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/database.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/my_utils.py" beforeDir="false" afterPath="$PROJECT_DIR$/my_utils.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test.py" beforeDir="false" afterPath="$PROJECT_DIR$/test.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -153,7 +159,15 @@
       <option name="project" value="LOCAL" />
       <updated>1757655901316</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="working so so - need to add more directions">
+      <option name="closed" value="true" />
+      <created>1757656561114</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1757656561114</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -172,6 +186,7 @@
     <MESSAGE value="rotating sword" />
     <MESSAGE value="attacking" />
     <MESSAGE value="sync" />
-    <option name="LAST_COMMIT_MESSAGE" value="sync" />
+    <MESSAGE value="working so so - need to add more directions" />
+    <option name="LAST_COMMIT_MESSAGE" value="working so so - need to add more directions" />
   </component>
 </project>
