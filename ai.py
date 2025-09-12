@@ -109,3 +109,7 @@ def get_all_coliding_units(col:dict,database):
     for dir in database["possible_directions"]:
         ret+=col[dir]
     return ret
+
+
+
+

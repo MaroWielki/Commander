@@ -273,8 +273,6 @@ class Unit(pygame.sprite.Sprite):
 
 
         if self.action=="WALK":
-
-
             new_xy=move_xy((self.rect.center),self.direction,self.speed)
             tmp_rect= self.hit_box_rect.copy()
             tmp_rect.center=new_xy
@@ -423,4 +421,32 @@ def remove_units(database):
             unit.remove(database["units_teamB"])
 
 
+def get_all_objects_except(database:dict,exclude:Unit):
+    ret=[]
+    for unit in database["units_teamA"]+database["units_"+exclude.enemy_team]:
+        if unit.id!=exclude.id:
+            ret.append(unit)
+    return ret
+
+def get_graph_vers(unit,database):
+    tmp_rects=[]
+    other_objects=get_all_objects_except(database,exclude=unit)
+    for other_unit in other_objects:
+        tmp_rects.append(unit.hit_box_rect.copy())
+        tmp=unit.hit_box_rect.topleft
+        tmp_rects[-1].bottomright = (tmp[0]-1,tmp[1]-1)
+
+        tmp_rects.append(unit.hit_box_rect.copy())
+        tmp=unit.hit_box_rect.topright
+        tmp_rects[-1].bottomleft = (tmp[0]+1,tmp[1]-1)
+
+        tmp_rects.append(unit.hit_box_rect.copy())
+        tmp=unit.hit_box_rect.bottomleft
+        tmp_rects[-1].topright = (tmp[0]-1,tmp[1]+1)
+
+        tmp_rects.append(unit.hit_box_rect.copy())
+        tmp=unit.hit_box_rect.bottomright
+        tmp_rects[-1].topleft = (tmp[0]+1,tmp[1]+1)
+
+    return tmp_rects   # WYblituj to w mainie zobaczyc czy OK
 

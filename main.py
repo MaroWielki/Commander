@@ -1,5 +1,6 @@
 import sys
 
+
 import pygame
 from pygame import K_ESCAPE, K_LEFT, K_RIGHT, KSCAN_UP, K_DOWN, K_SPACE
 
@@ -18,17 +19,17 @@ last_update_time = pygame.time.get_ticks()
 database["units_teamA"]=pygame.sprite.Group()
 database["units_teamB"]=pygame.sprite.Group()
 
-database["units_teamA"].add(Unit(100,100,"teamA",units_database["soldier1"],database,move_algorithm="movemendAI",attack_algorithm="attackAI",id="AAA"))
-database["units_teamA"].add(Unit(200,100,"teamA",units_database["soldier1"],database,move_algorithm="movemendAI",attack_algorithm="attackAI",id="AAAA"))
+database["units_teamA"].add(Unit(200,300,"teamA",units_database["soldier1"],database,move_algorithm="movemendAI",attack_algorithm="attackAI",id="AAA"))
+database["units_teamA"].add(Unit(400,300,"teamA",units_database["soldier1"],database,id="AAAA"))
 #database["units_teamB"].add(Unit(400,300,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI_B",id="BBB"))
-database["units_teamB"].add(Unit(600,300,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI",attack_algorithm="attackAI",id="BBB"))
-database["units_teamB"].add(Unit(600,400,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI",attack_algorithm="attackAI",id="BBBB"))
+database["units_teamB"].add(Unit(600,310,"teamB",units_database["soldier1"],database,id="BBB"))
 
 
-for i in range(10):
-    database["units_teamA"].add(
-        Unit(i*50, 100, "teamA", units_database["soldier1"], database, move_algorithm="movemendAI",
-             attack_algorithm="attackAI", id=str(i)))
+#
+# for i in range(10):
+#     database["units_teamA"].add(
+#         Unit(i*50, 100, "teamA", units_database["soldier1"], database, move_algorithm="movemendAI",
+#              attack_algorithm="attackAI", id=str(i)))
 
 
 while True:
