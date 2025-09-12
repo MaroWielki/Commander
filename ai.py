@@ -16,7 +16,13 @@ def find_closest_enemy(unit, enemies_group: pygame.sprite.Group):
     return closest_enemy
 
 def movemendAI_B(unit, enemies_group: pygame.sprite.Group, teammates_group: pygame.sprite.Group, database):
-    return "asd"
+    ret = "manual"
+
+    if ret is not None and unit.direction != "":
+        print(unit.direction,unit.db["collided_with_dict"])
+        if unit.db["collided_with_dict"][unit.direction] !=[]:
+            ret =None
+    return ret
 
 def movemendAI(unit, enemies_group: pygame.sprite.Group, teammates_group: pygame.sprite.Group, database):
 

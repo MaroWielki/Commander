@@ -170,6 +170,7 @@ class Unit(pygame.sprite.Sprite):
                 self.action="WALK"
                 self.direction=determin_walk_direction(self)
         elif self.move_target is not None and type(self.move_target)==str:
+
             pass
         else:
             self.action="IDLE"
