@@ -1,4 +1,5 @@
 from os import spawnl
+import igraph as ig
 
 import pygame
 from data import *
@@ -106,6 +107,7 @@ class Unit(pygame.sprite.Sprite):
     def __init__(self, x:int, y:int, team_name:str,unit_data:dict,database:dict,scale_down_factor=1,move_algorithm=None,attack_algorithm=None,id=None):
         pygame.sprite.Sprite.__init__(self)
 
+        self.debug_lines=[]
         self.graph_verts=None
         self.id=id#str(uuid.uuid1())
         self.db = unit_data
@@ -264,8 +266,13 @@ class Unit(pygame.sprite.Sprite):
 
 
 
+
         ### DEBUG
-        if self.id=="AAA": get_graph_vers(self,self.database)
+        if self.id=="AAA":
+            get_graph_vers(self,self.database)
+            get_graph_edges(self,self.database)
+
+
 
         # pygame.draw.rect(self.image, "red", (0,0,self.rect.width,self.rect.height),1)
         # pygame.draw.rect(self.image, "red", (0, 0, self.hit_box_rect.width, self.hit_box_rect.height), 1)
@@ -425,16 +432,16 @@ def remove_units(database):
 
 def get_all_objects_except(database:dict,exclude:Unit):
     ret=[]
-    for unit in database["units_teamA"].sprites()+database["units_"+exclude.enemy_team].sprites():
+    for unit in database["units_"+exclude.team_name].sprites()+database["units_"+exclude.enemy_team].sprites():
         if unit.id!=exclude.id:
             ret.append(unit)
     return ret
 
 def get_graph_vers(unit,database):
-    tmp_rects=[]
+    tmp_rects=[unit.hit_box_rect.copy()]
     other_objects=get_all_objects_except(database,exclude=unit)
     for other_unit in other_objects:
-        print(other_unit.id)
+
         tmp_rects.append(unit.hit_box_rect.copy())
         tmp=other_unit.hit_box_rect.topleft
         tmp_rects[-1].bottomright = (tmp[0]-1,tmp[1]-1)
@@ -455,4 +462,20 @@ def get_graph_vers(unit,database):
 
 
     #return tmp_rects   # WYblituj to w mainie zobaczyc czy OK
+
+def get_graph_edges(unit,database):
+    all_objects=get_all_objects_except(database,exclude=unit)
+    unit.debug_lines=[]
+    starting_vert=unit.graph_verts[0]
+    for vert_from in unit.graph_verts:
+        for vert_to in unit.graph_verts:
+            if vert_from != vert_to:
+                line = (vert_from.center, vert_to.center)
+                is_clear=True
+                for obstacle in unit.graph_verts[1:]+[x.rect for x in all_objects]:
+
+                    #unit.debug_lines.append(line)
+                    if obstacle.clipline(line)!=() and obstacle not in [vert_to,vert_from]:
+                        is_clear=False
+                if is_clear: unit.debug_lines.append(line)
 

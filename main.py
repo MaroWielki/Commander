@@ -62,6 +62,10 @@ while True:
         for x in database["units_teamA"].sprites()[0].graph_verts:
             pygame.draw.rect(screen,"yellow",x,1)
 
+        for x in database["units_teamA"].sprites()[0].debug_lines:
+            pygame.draw.line(screen,"yellow",x[0],x[1])
+
+
 
 
 
