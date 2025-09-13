@@ -106,6 +106,7 @@ class Unit(pygame.sprite.Sprite):
     def __init__(self, x:int, y:int, team_name:str,unit_data:dict,database:dict,scale_down_factor=1,move_algorithm=None,attack_algorithm=None,id=None):
         pygame.sprite.Sprite.__init__(self)
 
+        self.graph_verts=None
         self.id=id#str(uuid.uuid1())
         self.db = unit_data
         self.move_algorithm=move_algorithm
@@ -264,6 +265,7 @@ class Unit(pygame.sprite.Sprite):
 
 
         ### DEBUG
+        if self.id=="AAA": get_graph_vers(self,self.database)
 
         # pygame.draw.rect(self.image, "red", (0,0,self.rect.width,self.rect.height),1)
         # pygame.draw.rect(self.image, "red", (0, 0, self.hit_box_rect.width, self.hit_box_rect.height), 1)
@@ -423,7 +425,7 @@ def remove_units(database):
 
 def get_all_objects_except(database:dict,exclude:Unit):
     ret=[]
-    for unit in database["units_teamA"]+database["units_"+exclude.enemy_team]:
+    for unit in database["units_teamA"].sprites()+database["units_"+exclude.enemy_team].sprites():
         if unit.id!=exclude.id:
             ret.append(unit)
     return ret
@@ -432,21 +434,25 @@ def get_graph_vers(unit,database):
     tmp_rects=[]
     other_objects=get_all_objects_except(database,exclude=unit)
     for other_unit in other_objects:
+        print(other_unit.id)
         tmp_rects.append(unit.hit_box_rect.copy())
-        tmp=unit.hit_box_rect.topleft
+        tmp=other_unit.hit_box_rect.topleft
         tmp_rects[-1].bottomright = (tmp[0]-1,tmp[1]-1)
 
         tmp_rects.append(unit.hit_box_rect.copy())
-        tmp=unit.hit_box_rect.topright
+        tmp=other_unit.hit_box_rect.topright
         tmp_rects[-1].bottomleft = (tmp[0]+1,tmp[1]-1)
 
         tmp_rects.append(unit.hit_box_rect.copy())
-        tmp=unit.hit_box_rect.bottomleft
+        tmp=other_unit.hit_box_rect.bottomleft
         tmp_rects[-1].topright = (tmp[0]-1,tmp[1]+1)
 
         tmp_rects.append(unit.hit_box_rect.copy())
-        tmp=unit.hit_box_rect.bottomright
+        tmp=other_unit.hit_box_rect.bottomright
         tmp_rects[-1].topleft = (tmp[0]+1,tmp[1]+1)
 
-    return tmp_rects   # WYblituj to w mainie zobaczyc czy OK
+        unit.graph_verts=tmp_rects
+
+
+    #return tmp_rects   # WYblituj to w mainie zobaczyc czy OK
 

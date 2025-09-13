@@ -46,17 +46,22 @@ while True:
     remove_units(database)
 
     ###DEBUG
-    debug=False
-    #debug=True
+    #debug=False
+    debug=True
     if debug==True:
         for u in database["units_teamA"].sprites():
             pygame.draw.rect(screen,"white",u.hit_box_rect,1)
         for u in database["units_teamB"].sprites():
             pygame.draw.rect(screen,"white",u.hit_box_rect,1)
 
-        for u in database["units_teamA"].sprites():
-            for dir in database["possible_directions_8"]:
-                pygame.draw.rect(screen,"white",u.attack_hit_box[dir],1)
+        # for u in database["units_teamA"].sprites():
+        #     for dir in database["possible_directions_8"]:
+        #         if u.attack_hit_box[dir] is not None:
+        #             pygame.draw.rect(screen,"white",u.attack_hit_box[dir],1)
+
+        for x in database["units_teamA"].sprites()[0].graph_verts:
+            pygame.draw.rect(screen,"yellow",x,1)
+
 
 
 
