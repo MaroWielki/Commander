@@ -464,6 +464,7 @@ def get_graph_vers(unit,database):
     #return tmp_rects   # WYblituj to w mainie zobaczyc czy OK
 
 def get_graph_edges(unit,database):
+    edges=[]
     all_objects=get_all_objects_except(database,exclude=unit)
     unit.debug_lines=[]
     starting_vert=unit.graph_verts[0]
@@ -477,5 +478,8 @@ def get_graph_edges(unit,database):
                     #unit.debug_lines.append(line)
                     if obstacle.clipline(line)!=() and obstacle not in [vert_to,vert_from]:
                         is_clear=False
-                if is_clear: unit.debug_lines.append(line)
+                if is_clear:
+                    unit.debug_lines.append(line)
+                    weight=pygame.math.Vector2(line[0][0]-line[1][0],line[0][1]-line[1][1]).length()
+                    edges.append((unit.graph_verts.index(vert_from),unit.graph_verts.index(vert_to),weight))
 

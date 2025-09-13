@@ -21,8 +21,8 @@ database["units_teamB"]=pygame.sprite.Group()
 
 database["units_teamA"].add(Unit(200,300,"teamA",units_database["soldier1"],database,move_algorithm="movemendAI",attack_algorithm="attackAI",id="AAA"))
 database["units_teamA"].add(Unit(400,300,"teamA",units_database["soldier1"],database,id="AAAA"))
-#database["units_teamB"].add(Unit(400,300,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI_B",id="BBB"))
-database["units_teamB"].add(Unit(600,310,"teamB",units_database["soldier1"],database,id="BBB"))
+database["units_teamB"].add(Unit(600,300,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI_B",id="BBB"))
+#database["units_teamB"].add(Unit(600,310,"teamB",units_database["soldier1"],database,id="BBB"))
 
 
 #
