@@ -11,6 +11,10 @@ from database import *
 
 pygame.init()
 
+pygame.font.init()
+
+my_font = pygame.font.SysFont('Comic Sans MS', 15)
+
 MyRealFPS = RealFPS(50)
 screen=pygame.display.set_mode((800,600))
 clock = pygame.time.Clock()
@@ -19,7 +23,8 @@ last_update_time = pygame.time.get_ticks()
 database["units_teamA"]=pygame.sprite.Group()
 database["units_teamB"]=pygame.sprite.Group()
 
-database["units_teamA"].add(Unit(200,300,"teamA",units_database["soldier1"],database,move_algorithm="movemendAI",attack_algorithm="attackAI",id="AAA"))
+#database["units_teamA"].add(Unit(200,300,"teamA",units_database["soldier1"],database,move_algorithm="movementAI",attack_algorithm="attackAI",id="AAA"))
+database["units_teamA"].add(Unit(200,300,"teamA",units_database["soldier1"],database,move_algorithm="movementAI_Graph",attack_algorithm="attackAI",id="AAA"))
 database["units_teamA"].add(Unit(400,300,"teamA",units_database["soldier1"],database,id="AAAA"))
 database["units_teamB"].add(Unit(600,300,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI_B",id="BBB"))
 #database["units_teamB"].add(Unit(600,310,"teamB",units_database["soldier1"],database,id="BBB"))
@@ -60,14 +65,18 @@ while True:
         #             pygame.draw.rect(screen,"white",u.attack_hit_box[dir],1)
 
         for x in database["units_teamA"].sprites()[0].graph_verts:
-            pygame.draw.rect(screen,"yellow",x,1)
+            pygame.draw.rect(screen,"yellow",x[0],1)
 
         for x in database["units_teamA"].sprites()[0].debug_lines:
             pygame.draw.line(screen,"yellow",x[0],x[1])
+        pygame.draw.circle(screen,"red",database["units_teamA"].sprites()[0].move_target,5)
 
 
 
 
+        text_surface = my_font.render(str(pygame.mouse.get_pos()), False, "white")
+
+        screen.blit(text_surface,(0,0))
 
     pygame.display.update()
     clock.tick(60)

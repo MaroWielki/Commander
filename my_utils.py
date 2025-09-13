@@ -104,7 +104,7 @@ class AnimationData:
 
 
 class Unit(pygame.sprite.Sprite):
-    def __init__(self, x:int, y:int, team_name:str,unit_data:dict,database:dict,scale_down_factor=1,move_algorithm=None,attack_algorithm=None,id=None):
+    def __init__(self, x:int, y:int, team_name:str,unit_data:dict,database:dict,scale_down_factor=1,move_algorithm=None,attack_algorithm=None,id=None,target_priority="closest"):
         pygame.sprite.Sprite.__init__(self)
 
         self.debug_lines=[]
@@ -122,7 +122,7 @@ class Unit(pygame.sprite.Sprite):
         self.db["collided_with"]=[]
         self.weapon=pygame.sprite.Group()
         self.weapon.add(Item(self,items_database["sword1"]))
-
+        self.target_priority=target_priority
         self.x=x
         self.y=y
         self.blank=pygame.image.load("img/blank64x64.png").convert_alpha()
@@ -180,8 +180,18 @@ class Unit(pygame.sprite.Sprite):
         ### AI
         self.db["collided_with_dict"]=check_nearby_collisions(self,self.database["units_"+self.enemy_team].sprites()+self.database["units_"+self.team_name].sprites())
 
-        if self.move_algorithm=="movemendAI":
+        if self.move_algorithm=="movementAI":
             self.move_target=movemendAI(self,self.database["units_"+self.enemy_team],self.database["units_"+self.team_name],self.database)
+
+        if self.move_algorithm=="movementAI_Graph":
+            self.graph_verts = get_graph_vers(self,self.database)
+            self.graph_edges = get_graph_edges(self,self.database)
+            self.graph=ig.Graph([(x[0],x[1]) for x in self.graph_edges])
+            self.graph.es["weights"] = [x[2] for x in self.graph_edges]
+
+            self.move_target=movementAI_Graph(self)
+
+
         if self.move_algorithm=="movemendAI_B":
             self.move_target=movemendAI_B(self,self.database["units_"+self.enemy_team],self.database["units_"+self.team_name],self.database)
 
@@ -194,8 +204,8 @@ class Unit(pygame.sprite.Sprite):
 
         self.action="IDLE"
         if self.move_target is not None:
-            if type(self.move_target)==Unit:
-                walk_dir=determin_walk_direction(self)
+            if type(self.move_target) in [Unit,tuple]:
+                walk_dir=determin_walk_direction(self.rect.center,self.move_target)
                 if walk_dir is not None:
                     self.action="WALK"
                     self.direction=walk_dir
@@ -266,19 +276,9 @@ class Unit(pygame.sprite.Sprite):
         pygame.draw.rect(self.image, color, (0,0,self.rect.width*(self.hp/self.init_hp),2))
 
 
-
-
-
-
         ### DEBUG
-        if self.id=="AAA":
-            self.graph_verts = get_graph_vers(self,self.database)
-            self.graph_edges = get_graph_edges(self,self.database)
 
-            graph=ig.Graph([(x[0],x[1]) for x in self.graph_edges])
-            graph.es["weights"] = [x[2] for x in self.graph_edges]
-            results = graph.get_shortest_paths(0, to=5, weights=graph.es["weights"], output="vpath")
-            print(results)
+
 
 
 
@@ -413,9 +413,9 @@ def move_xy(xy:tuple,direction:str,speed:int):
 
     return ret
 
-def determin_walk_direction(unit:Unit):
-    start_xy=unit.rect.center
-    target_xy=unit.move_target.rect.center
+def determin_walk_direction(start_xy,target_xy):
+    #start_xy=unit.rect.center
+    #target_xy=unit.move_target.rect.center
     ret=None
     if target_xy[0]<start_xy[0]: ret="LEFT"
     if target_xy[0]>start_xy[0] : ret = "RIGHT"
@@ -447,45 +447,52 @@ def get_all_objects_except(database:dict,exclude:Unit):
     return ret
 
 def get_graph_vers(unit,database):
-    tmp_rects=[unit.hit_box_rect.copy()]
+    tmp_rects=[(unit.hit_box_rect.copy(),unit.id)]
     other_objects=get_all_objects_except(database,exclude=unit)
+    my_position_v2 = pygame.math.Vector2(unit.rect.center)
     for other_unit in other_objects:
 
         #topleft
-        tmp_rects.append(unit.hit_box_rect.copy())
+
+        tmp_rects.append((unit.hit_box_rect.copy(),other_unit.id))
         tmp=other_unit.hit_box_rect.topleft
-        tmp_rects[-1].bottomright = (tmp[0]-1,tmp[1]-1)
+        tmp_rects[-1][0].bottomright = (tmp[0]-1,tmp[1]-1)
         ### so the ray does not slip in corner
-        tmp_rects[-1].width+=1
-        tmp_rects[-1].height += 1
-        tmp_rects[-1].topleft=(tmp_rects[-1].topleft[0]+2,tmp_rects[-1].topleft[1]+2)
+        tmp_rects[-1][0].width+=1
+        tmp_rects[-1][0].height += 1
+        tmp_rects[-1][0].topleft=(tmp_rects[-1][0].topleft[0]+2,tmp_rects[-1][0].topleft[1]+2)
+        ## IF already at this point then dont consider it
+        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))<3: tmp_rects.pop(-1)
 
         # topright
-        tmp_rects.append(unit.hit_box_rect.copy())
+        tmp_rects.append((unit.hit_box_rect.copy(),other_unit.id))
         tmp=other_unit.hit_box_rect.topright
-        tmp_rects[-1].bottomleft = (tmp[0]+1,tmp[1]-1)
+        tmp_rects[-1][0].bottomleft = (tmp[0]+1,tmp[1]-1)
         ### so the ray does not slip in corner
-        tmp_rects[-1].width += 1
-        tmp_rects[-1].height += 1
-        tmp_rects[-1].topleft = (tmp_rects[-1].topleft[0] - 2, tmp_rects[-1].topleft[1] + 2)
+        tmp_rects[-1][0].width += 1
+        tmp_rects[-1][0].height += 1
+        tmp_rects[-1][0].topleft = (tmp_rects[-1][0].topleft[0] - 2, tmp_rects[-1][0].topleft[1] + 2)
+        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))<3: tmp_rects.pop(-1)
 
         #bottomleft
-        tmp_rects.append(unit.hit_box_rect.copy())
+        tmp_rects.append((unit.hit_box_rect.copy(),other_unit.id))
         tmp=other_unit.hit_box_rect.bottomleft
-        tmp_rects[-1].topright = (tmp[0]-1,tmp[1]+1)
+        tmp_rects[-1][0].topright = (tmp[0]-1,tmp[1]+1)
         ### so the ray does not slip in corner
-        tmp_rects[-1].width += 1
-        tmp_rects[-1].height += 1
-        tmp_rects[-1].topleft = (tmp_rects[-1].topleft[0] +2, tmp_rects[-1].topleft[1] - 2)
+        tmp_rects[-1][0].width += 1
+        tmp_rects[-1][0].height += 1
+        tmp_rects[-1][0].topleft = (tmp_rects[-1][0].topleft[0] +2, tmp_rects[-1][0].topleft[1] - 2)
+        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))<3: tmp_rects.pop(-1)
 
         #bottomright
-        tmp_rects.append(unit.hit_box_rect.copy())
+        tmp_rects.append((unit.hit_box_rect.copy(),other_unit.id))
         tmp=other_unit.hit_box_rect.bottomright
-        tmp_rects[-1].topleft = (tmp[0]+1,tmp[1]+1)
+        tmp_rects[-1][0].topleft = (tmp[0]+1,tmp[1]+1)
         ### so the ray does not slip in corner
-        tmp_rects[-1].width += 1
-        tmp_rects[-1].height += 1
-        tmp_rects[-1].topleft = (tmp_rects[-1].topleft[0] - 2, tmp_rects[-1].topleft[1] - 2)
+        tmp_rects[-1][0].width += 1
+        tmp_rects[-1][0].height += 1
+        tmp_rects[-1][0].topleft = (tmp_rects[-1][0].topleft[0] - 2, tmp_rects[-1][0].topleft[1] - 2)
+        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))<3: tmp_rects.pop(-1)
 
     return tmp_rects
 
@@ -496,14 +503,15 @@ def get_graph_edges(unit,database):
     edges=[]
     all_objects=get_all_objects_except(database,exclude=unit)
     unit.debug_lines=[]
-    starting_vert=unit.graph_verts[0]
-    for vert_from in unit.graph_verts:
-        for vert_to in unit.graph_verts:
+    starting_vert=unit.graph_verts[0][0]
+    graph_verts_verts_only=[x[0] for x in unit.graph_verts]
+    for vert_from in graph_verts_verts_only:
+        for vert_to in graph_verts_verts_only:
             if vert_from != vert_to:
                 line = (vert_from.center, vert_to.center)
                 is_clear=True
 
-                for obstacle in unit.graph_verts[1:]+[x.hit_box_rect for x in all_objects]:
+                for obstacle in graph_verts_verts_only[1:]+[x.hit_box_rect for x in all_objects]:
 
                     #unit.debug_lines.append(line)
                     if obstacle.clipline(line)!=() and obstacle not in [vert_to,vert_from]:
@@ -511,6 +519,6 @@ def get_graph_edges(unit,database):
                 if is_clear:
                     unit.debug_lines.append(line)
                     weight=pygame.math.Vector2(line[0][0]-line[1][0],line[0][1]-line[1][1]).length()
-                    edges.append((unit.graph_verts.index(vert_from),unit.graph_verts.index(vert_to),weight))
+                    edges.append((graph_verts_verts_only.index(vert_from),graph_verts_verts_only.index(vert_to),weight))
     return edges
 

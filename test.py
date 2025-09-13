@@ -2,4 +2,5 @@
 
 a=[1,2,3]
 
-print(a.index(3))
+a.pop(-1)
+print(a)

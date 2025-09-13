@@ -6,7 +6,8 @@ from math import floor
 def find_closest_enemy(unit, enemies_group: pygame.sprite.Group):
     closest_enemy = None
     closest_enemy_distance = 9999
-    my_position_v2 = pygame.math.Vector2(unit.x, unit.y)
+    my_position_v2 = pygame.math.Vector2(unit.rect.centerx, unit.rect.centery)
+
     for enemy in enemies_group.sprites():
 
         distance = my_position_v2.distance_to((enemy.x, enemy.y))
@@ -31,19 +32,36 @@ def movemendAI_B(unit, enemies_group: pygame.sprite.Group, teammates_group: pyga
 def movemendAI(unit, enemies_group: pygame.sprite.Group, teammates_group: pygame.sprite.Group, database):
 
     enemy = find_closest_enemy(unit, enemies_group)
-
     ret=enemy
-
-    #for dir in ["LEFT", "RIGHT", "UP", "DOWN"]:
-    #    if unit.db["collided_with_dict"][dir] == enemy.uuid:
-    #        ret=None
 
     if ret is not None:
 
         #print(unit.id,ret.id, unit.db["collided_with_dict"])
         if ret.id  in get_all_coliding_units(unit.db["collided_with_dict"],database):
             ret =None
+    ret=ret.rect.center
     return ret
+
+def movementAI_Graph(unit):
+
+    if unit.target_priority=="closest":
+        target_id=find_closest_enemy(unit, unit.database["units_"+unit.enemy_team]).id
+
+        for i in range(0,len(unit.graph_verts)):
+            if unit.graph_verts[i][1] == target_id:
+                target_index=i
+
+
+
+    shortest_path = unit.graph.get_shortest_paths(0, to=i, weights=unit.graph.es["weights"], output="vpath")
+
+    print(" ")
+    print(unit.graph_verts)
+    print(unit.graph_edges)
+    print(shortest_path)
+    print(unit.graph_verts[i][0])
+    return unit.graph_verts[shortest_path[0][1]][0].center
+
 
 def attackAI(unit, enemies_group: pygame.sprite.Group,database):
 
