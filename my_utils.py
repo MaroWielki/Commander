@@ -109,6 +109,7 @@ class Unit(pygame.sprite.Sprite):
 
         self.debug_lines=[]
         self.graph_verts=None
+        self.graph_edges=None
         self.id=id#str(uuid.uuid1())
         self.db = unit_data
         self.move_algorithm=move_algorithm
@@ -267,10 +268,18 @@ class Unit(pygame.sprite.Sprite):
 
 
 
+
+
         ### DEBUG
         if self.id=="AAA":
-            get_graph_vers(self,self.database)
-            get_graph_edges(self,self.database)
+            self.graph_verts = get_graph_vers(self,self.database)
+            self.graph_edges = get_graph_edges(self,self.database)
+
+            graph=ig.Graph([(x[0],x[1]) for x in self.graph_edges])
+            graph.es["weights"] = [x[2] for x in self.graph_edges]
+            results = graph.get_shortest_paths(0, to=5, weights=graph.es["weights"], output="vpath")
+            print(results)
+
 
 
 
@@ -442,23 +451,43 @@ def get_graph_vers(unit,database):
     other_objects=get_all_objects_except(database,exclude=unit)
     for other_unit in other_objects:
 
+        #topleft
         tmp_rects.append(unit.hit_box_rect.copy())
         tmp=other_unit.hit_box_rect.topleft
         tmp_rects[-1].bottomright = (tmp[0]-1,tmp[1]-1)
+        ### so the ray does not slip in corner
+        tmp_rects[-1].width+=1
+        tmp_rects[-1].height += 1
+        tmp_rects[-1].topleft=(tmp_rects[-1].topleft[0]+2,tmp_rects[-1].topleft[1]+2)
 
+        # topright
         tmp_rects.append(unit.hit_box_rect.copy())
         tmp=other_unit.hit_box_rect.topright
         tmp_rects[-1].bottomleft = (tmp[0]+1,tmp[1]-1)
+        ### so the ray does not slip in corner
+        tmp_rects[-1].width += 1
+        tmp_rects[-1].height += 1
+        tmp_rects[-1].topleft = (tmp_rects[-1].topleft[0] - 2, tmp_rects[-1].topleft[1] + 2)
 
+        #bottomleft
         tmp_rects.append(unit.hit_box_rect.copy())
         tmp=other_unit.hit_box_rect.bottomleft
         tmp_rects[-1].topright = (tmp[0]-1,tmp[1]+1)
+        ### so the ray does not slip in corner
+        tmp_rects[-1].width += 1
+        tmp_rects[-1].height += 1
+        tmp_rects[-1].topleft = (tmp_rects[-1].topleft[0] +2, tmp_rects[-1].topleft[1] - 2)
 
+        #bottomright
         tmp_rects.append(unit.hit_box_rect.copy())
         tmp=other_unit.hit_box_rect.bottomright
         tmp_rects[-1].topleft = (tmp[0]+1,tmp[1]+1)
+        ### so the ray does not slip in corner
+        tmp_rects[-1].width += 1
+        tmp_rects[-1].height += 1
+        tmp_rects[-1].topleft = (tmp_rects[-1].topleft[0] - 2, tmp_rects[-1].topleft[1] - 2)
 
-        unit.graph_verts=tmp_rects
+    return tmp_rects
 
 
     #return tmp_rects   # WYblituj to w mainie zobaczyc czy OK
@@ -473,7 +502,8 @@ def get_graph_edges(unit,database):
             if vert_from != vert_to:
                 line = (vert_from.center, vert_to.center)
                 is_clear=True
-                for obstacle in unit.graph_verts[1:]+[x.rect for x in all_objects]:
+
+                for obstacle in unit.graph_verts[1:]+[x.hit_box_rect for x in all_objects]:
 
                     #unit.debug_lines.append(line)
                     if obstacle.clipline(line)!=() and obstacle not in [vert_to,vert_from]:
@@ -482,4 +512,5 @@ def get_graph_edges(unit,database):
                     unit.debug_lines.append(line)
                     weight=pygame.math.Vector2(line[0][0]-line[1][0],line[0][1]-line[1][1]).length()
                     edges.append((unit.graph_verts.index(vert_from),unit.graph_verts.index(vert_to),weight))
+    return edges
 
