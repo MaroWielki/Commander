@@ -156,6 +156,8 @@ class Unit(pygame.sprite.Sprite):
         self.speed=self.db["speed"]
         self.database=database
         self.move_target=None
+        self.move_target_finish = None
+        self.move_last_visited_vert=[None]
         self.hit_box_rect = pygame.rect.Rect(0,0,self.db["oryginal_hitbox_size_xy"][0],self.db["oryginal_hitbox_size_xy"][1])
         self.rect = pygame.rect.Rect(self.x, self.y, self.data.animationdata[self.animation_name].frame_window_width,
                                      self.data.animationdata[self.animation_name].frame_window_height)
@@ -453,7 +455,6 @@ def get_graph_vers(unit,database):
 
     #tmp_rects.append((unit.hit_box_rect.copy(), unit.id))
     for other_unit in other_objects:
-
         #topleft
 
         tmp_rects.append((unit.hit_box_rect.copy(),other_unit.id))
@@ -464,7 +465,8 @@ def get_graph_vers(unit,database):
         tmp_rects[-1][0].height += 1
         tmp_rects[-1][0].topleft=(tmp_rects[-1][0].topleft[0]+2,tmp_rects[-1][0].topleft[1]+2)
         ## IF already at this point then dont consider it
-        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))<3: tmp_rects.pop(-1)
+        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))==0:
+            unit.move_last_visited_vert= tmp_rects.pop(-1)
 
         # topright
         tmp_rects.append((unit.hit_box_rect.copy(),other_unit.id))
@@ -474,7 +476,8 @@ def get_graph_vers(unit,database):
         tmp_rects[-1][0].width += 1
         tmp_rects[-1][0].height += 1
         tmp_rects[-1][0].topleft = (tmp_rects[-1][0].topleft[0] - 2, tmp_rects[-1][0].topleft[1] + 2)
-        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))<3: tmp_rects.pop(-1)
+        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))==0:
+            unit.move_last_visited_vert= tmp_rects.pop(-1)
 
         #bottomleft
         tmp_rects.append((unit.hit_box_rect.copy(),other_unit.id))
@@ -484,7 +487,8 @@ def get_graph_vers(unit,database):
         tmp_rects[-1][0].width += 1
         tmp_rects[-1][0].height += 1
         tmp_rects[-1][0].topleft = (tmp_rects[-1][0].topleft[0] +2, tmp_rects[-1][0].topleft[1] - 2)
-        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))<3: tmp_rects.pop(-1)
+        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))==0:
+            unit.move_last_visited_vert= tmp_rects.pop(-1)
 
         #bottomright
         tmp_rects.append((unit.hit_box_rect.copy(),other_unit.id))
@@ -494,7 +498,10 @@ def get_graph_vers(unit,database):
         tmp_rects[-1][0].width += 1
         tmp_rects[-1][0].height += 1
         tmp_rects[-1][0].topleft = (tmp_rects[-1][0].topleft[0] - 2, tmp_rects[-1][0].topleft[1] - 2)
-        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))<3: tmp_rects.pop(-1)
+        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))==0:
+            unit.move_last_visited_vert= tmp_rects.pop(-1)
+
+
 
     return tmp_rects
 
@@ -507,26 +514,27 @@ def get_graph_edges(unit,database):
     unit.debug_lines=[]
     starting_vert=unit.graph_verts[0][0]
     graph_verts_verts_only=[x[0] for x in unit.graph_verts]
+
     for vert_from in graph_verts_verts_only:
         for vert_to in graph_verts_verts_only:
+
             if vert_from != vert_to:
                 line = (vert_from.center, vert_to.center)
-                is_clear=True
-
+                is_clear = True
 
                 deb_i=0
                 for obstacle in graph_verts_verts_only[1:]+[x.hit_box_rect for x in all_objects]:
 
                     #unit.debug_lines.append(line)
-                    if obstacle.clipline(line)!=() and obstacle not in [vert_to,vert_from] and obstacle.colliderect(unit.hit_box_rect) == False:
-                        if unit.hit_box_rect == pygame.rect.Rect(375, 323, 20, 45):
-                            if vert_to == pygame.rect.Rect(409, 322, 21, 46):
-                                pass
 
-                        is_clear=False
+                    if obstacle.clipline(line)!=() and obstacle not in [vert_to,vert_from,unit.move_last_visited_vert[0]] :
+                        is_clear = False
+
                     deb_i += 1
+
                 if is_clear:
                     unit.debug_lines.append(line)
+                    print(line)
                     weight=pygame.math.Vector2(line[0][0]-line[1][0],line[0][1]-line[1][1]).length()
                     edges.append((graph_verts_verts_only.index(vert_from),graph_verts_verts_only.index(vert_to),weight))
 

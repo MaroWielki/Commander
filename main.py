@@ -26,7 +26,7 @@ database["units_teamB"]=pygame.sprite.Group()
 #database["units_teamA"].add(Unit(200,300,"teamA",units_database["soldier1"],database,move_algorithm="movementAI",attack_algorithm="attackAI",id="AAA"))
 database["units_teamA"].add(Unit(200,300,"teamA",units_database["soldier1"],database,move_algorithm="movementAI_Graph",attack_algorithm="attackAI",id="AAA"))
 database["units_teamA"].add(Unit(400,300,"teamA",units_database["soldier1"],database,id="AAAA"))
-database["units_teamB"].add(Unit(600,300,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI_B",id="BBB"))
+database["units_teamB"].add(Unit(600,290,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI_B",id="BBB"))
 #database["units_teamB"].add(Unit(600,310,"teamB",units_database["soldier1"],database,id="BBB"))
 
 
@@ -70,6 +70,7 @@ while True:
         for x in database["units_teamA"].sprites()[0].debug_lines:
             pygame.draw.line(screen,"yellow",x[0],x[1])
         pygame.draw.circle(screen,"red",database["units_teamA"].sprites()[0].move_target,5)
+        pygame.draw.circle(screen,"yellow",database["units_teamA"].sprites()[0].move_target_finish,3)
 
         text_surface = my_font.render(str(pygame.mouse.get_pos()), False, "white")
 

@@ -50,10 +50,10 @@ def movementAI_Graph(unit):
         for i in range(0,len(unit.graph_verts)):
             if unit.graph_verts[i][1] == target_id:
                 target_index=i
+        unit.move_target_finish= unit.graph_verts[target_index][0].center
 
 
-
-    shortest_path = unit.graph.get_shortest_paths(0, to=i, weights=unit.graph.es["weights"], output="vpath")
+    shortest_path = unit.graph.get_shortest_paths(0, to=target_index, weights=unit.graph.es["weights"], output="vpath")
 
     print(" ")
     # print(unit.graph_verts)
