@@ -50,7 +50,13 @@ def movementAI_Graph(unit):
         cantidat=[]
         for i in range(0,len(unit.graph_verts)):
             if unit.graph_verts[i][1] == target_id:
-                cantidat.append(i)
+
+                tmp_group=[]
+                for x in unit.database["units_"+unit.enemy_team].sprites()+unit.database["units_"+unit.team_name].sprites():
+                    if x.hit_box_rect!=unit.graph_verts[i][1]:
+                        tmp_group.append(x.hit_box_rect)
+                if unit.graph_verts[i][0].collidelist(tmp_group)==-1:
+                    cantidat.append(i)
                 #target_index=i
 
         cand_plus_road_length=[]
@@ -74,7 +80,15 @@ def movementAI_Graph(unit):
     # print(unit.graph_verts[i][0])
     for x in shortest_path[0]:
         print(unit.graph_verts[x],)
-    return unit.graph_verts[shortest_path[0][1]][0].center
+
+    if len(shortest_path[0])==0:
+        ret = unit.move_target_finish
+    else:
+        if len(shortest_path[0])==1:
+            ret = unit.graph_verts[shortest_path[0][0]][0].center
+        else:
+            ret = unit.graph_verts[shortest_path[0][1]][0].center
+    return ret
 
 
 def attackAI(unit, enemies_group: pygame.sprite.Group,database):

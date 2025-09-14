@@ -24,9 +24,9 @@ database["units_teamA"]=pygame.sprite.Group()
 database["units_teamB"]=pygame.sprite.Group()
 
 #database["units_teamA"].add(Unit(200,300,"teamA",units_database["soldier1"],database,move_algorithm="movementAI",attack_algorithm="attackAI",id="AAA"))
-database["units_teamA"].add(Unit(200,300,"teamA",units_database["soldier1"],database,move_algorithm="movementAI_Graph",attack_algorithm="attackAI",id="AAA"))
+database["units_teamA"].add(Unit(200,200,"teamA",units_database["soldier1"],database,move_algorithm="movementAI_Graph",attack_algorithm="attackAI",id="AAA"))
 database["units_teamA"].add(Unit(400,300,"teamA",units_database["soldier1"],database,id="AAAA"))
-database["units_teamB"].add(Unit(600,280,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI_B",id="BBB"))
+database["units_teamB"].add(Unit(600,100,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI_B",id="BBB"))
 #database["units_teamB"].add(Unit(600,310,"teamB",units_database["soldier1"],database,id="BBB"))
 
 
@@ -51,8 +51,8 @@ while True:
     remove_units(database)
 
     ###DEBUG
-    #debug=False
-    debug=True
+    debug=False
+    #debug=True
     if debug==True:
         for u in database["units_teamA"].sprites():
             pygame.draw.rect(screen,"white",u.hit_box_rect,1)
