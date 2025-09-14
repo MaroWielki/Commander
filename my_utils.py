@@ -465,7 +465,7 @@ def get_graph_vers(unit,database):
         tmp_rects[-1][0].height += 1
         tmp_rects[-1][0].topleft=(tmp_rects[-1][0].topleft[0]+2,tmp_rects[-1][0].topleft[1]+2)
         ## IF already at this point then dont consider it
-        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))==0:
+        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))<unit.speed:
             unit.move_last_visited_vert= tmp_rects.pop(-1)
 
         # topright
@@ -476,7 +476,7 @@ def get_graph_vers(unit,database):
         tmp_rects[-1][0].width += 1
         tmp_rects[-1][0].height += 1
         tmp_rects[-1][0].topleft = (tmp_rects[-1][0].topleft[0] - 2, tmp_rects[-1][0].topleft[1] + 2)
-        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))==0:
+        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))<unit.speed:
             unit.move_last_visited_vert= tmp_rects.pop(-1)
 
         #bottomleft
@@ -487,7 +487,7 @@ def get_graph_vers(unit,database):
         tmp_rects[-1][0].width += 1
         tmp_rects[-1][0].height += 1
         tmp_rects[-1][0].topleft = (tmp_rects[-1][0].topleft[0] +2, tmp_rects[-1][0].topleft[1] - 2)
-        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))==0:
+        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))<unit.speed:
             unit.move_last_visited_vert= tmp_rects.pop(-1)
 
         #bottomright
@@ -498,7 +498,7 @@ def get_graph_vers(unit,database):
         tmp_rects[-1][0].width += 1
         tmp_rects[-1][0].height += 1
         tmp_rects[-1][0].topleft = (tmp_rects[-1][0].topleft[0] - 2, tmp_rects[-1][0].topleft[1] - 2)
-        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))==0:
+        if my_position_v2.distance_to((tmp_rects[-1][0].centerx, tmp_rects[-1][0].centery))<unit.speed:
             unit.move_last_visited_vert= tmp_rects.pop(-1)
 
 

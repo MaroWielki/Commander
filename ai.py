@@ -47,14 +47,26 @@ def movementAI_Graph(unit):
     if unit.target_priority=="closest":
         target_id=find_closest_enemy(unit, unit.database["units_"+unit.enemy_team]).id
 
+        cantidat=[]
         for i in range(0,len(unit.graph_verts)):
             if unit.graph_verts[i][1] == target_id:
-                target_index=i
-        unit.move_target_finish= unit.graph_verts[target_index][0].center
+                cantidat.append(i)
+                #target_index=i
 
+        cand_plus_road_length=[]
+        for cand in cantidat:
+            #shortest_path = unit.graph.get_shortest_paths(0, to=cand, weights=unit.graph.es["weights"],output="vpath")
+            shortest_path = unit.graph.get_shortest_paths(0, to=cand, weights=unit.graph.es["weights"], output="epath")
+            distance=0
+            for e in shortest_path[0]:
+                distance += unit.graph.es[e]["weights"]
+            cand_plus_road_length.append((cand,distance))
 
-    shortest_path = unit.graph.get_shortest_paths(0, to=target_index, weights=unit.graph.es["weights"], output="vpath")
+        min_distance=min(x[1] for x in cand_plus_road_length)
+        target_index=[x[0] for x in cand_plus_road_length if x[1]==min_distance][0]
 
+        unit.move_target_finish = unit.graph_verts[target_index][0].center
+        shortest_path = unit.graph.get_shortest_paths(0, to=target_index, weights=unit.graph.es["weights"], output="vpath")
     print(" ")
     # print(unit.graph_verts)
     # print(unit.graph_edges)

@@ -1,6 +1,7 @@
 
 
-a=[1,2,3]
+a=[5,2,3,]
 
-a.pop(-1)
-print(a)
+
+print(min(a))
+print(a.index(min(a)))
