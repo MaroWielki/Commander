@@ -57,8 +57,8 @@ def movementAI_Graph(unit):
 
     print(" ")
     # print(unit.graph_verts)
-    print(unit.graph_edges)
-    print(shortest_path)
+    # print(unit.graph_edges)
+    # print(shortest_path)
     # print(unit.graph_verts[i][0])
     for x in shortest_path[0]:
         print(unit.graph_verts[x],)

@@ -71,15 +71,12 @@ while True:
             pygame.draw.line(screen,"yellow",x[0],x[1])
         pygame.draw.circle(screen,"red",database["units_teamA"].sprites()[0].move_target,5)
 
-
-
-
         text_surface = my_font.render(str(pygame.mouse.get_pos()), False, "white")
 
         screen.blit(text_surface,(0,0))
 
     pygame.display.update()
-    clock.tick(5)
+    clock.tick(60)
     database["frame_counter"]+=1
 
 

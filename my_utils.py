@@ -451,7 +451,7 @@ def get_graph_vers(unit,database):
     other_objects=get_all_objects_except(database,exclude=unit)
     my_position_v2 = pygame.math.Vector2(unit.rect.center)
 
-    tmp_rects.append((unit.hit_box_rect.copy(), unit.id))
+    #tmp_rects.append((unit.hit_box_rect.copy(), unit.id))
     for other_unit in other_objects:
 
         #topleft
@@ -513,14 +513,22 @@ def get_graph_edges(unit,database):
                 line = (vert_from.center, vert_to.center)
                 is_clear=True
 
+
+                deb_i=0
                 for obstacle in graph_verts_verts_only[1:]+[x.hit_box_rect for x in all_objects]:
 
                     #unit.debug_lines.append(line)
-                    if obstacle.clipline(line)!=() and obstacle not in [vert_to,vert_from]:
+                    if obstacle.clipline(line)!=() and obstacle not in [vert_to,vert_from] and obstacle.colliderect(unit.hit_box_rect) == False:
+                        if unit.hit_box_rect == pygame.rect.Rect(375, 323, 20, 45):
+                            if vert_to == pygame.rect.Rect(409, 322, 21, 46):
+                                pass
+
                         is_clear=False
+                    deb_i += 1
                 if is_clear:
                     unit.debug_lines.append(line)
                     weight=pygame.math.Vector2(line[0][0]-line[1][0],line[0][1]-line[1][1]).length()
                     edges.append((graph_verts_verts_only.index(vert_from),graph_verts_verts_only.index(vert_to),weight))
+
     return edges
 
