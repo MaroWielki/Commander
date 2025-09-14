@@ -79,7 +79,7 @@ while True:
         screen.blit(text_surface,(0,0))
 
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(5)
     database["frame_counter"]+=1
 
 

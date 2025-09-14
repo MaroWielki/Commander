@@ -450,6 +450,8 @@ def get_graph_vers(unit,database):
     tmp_rects=[(unit.hit_box_rect.copy(),unit.id)]
     other_objects=get_all_objects_except(database,exclude=unit)
     my_position_v2 = pygame.math.Vector2(unit.rect.center)
+
+    tmp_rects.append((unit.hit_box_rect.copy(), unit.id))
     for other_unit in other_objects:
 
         #topleft
@@ -497,7 +499,7 @@ def get_graph_vers(unit,database):
     return tmp_rects
 
 
-    #return tmp_rects   # WYblituj to w mainie zobaczyc czy OK
+
 
 def get_graph_edges(unit,database):
     edges=[]

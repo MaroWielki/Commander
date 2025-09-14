@@ -56,10 +56,12 @@ def movementAI_Graph(unit):
     shortest_path = unit.graph.get_shortest_paths(0, to=i, weights=unit.graph.es["weights"], output="vpath")
 
     print(" ")
-    print(unit.graph_verts)
+    # print(unit.graph_verts)
     print(unit.graph_edges)
     print(shortest_path)
-    print(unit.graph_verts[i][0])
+    # print(unit.graph_verts[i][0])
+    for x in shortest_path[0]:
+        print(unit.graph_verts[x],)
     return unit.graph_verts[shortest_path[0][1]][0].center
 
 
