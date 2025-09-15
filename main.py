@@ -24,7 +24,7 @@ def main():
     database["units_teamA"]=pygame.sprite.Group()
     database["units_teamB"]=pygame.sprite.Group()
 
-    for i in range(5):
+    for i in range(10):
         database["units_teamA"].add(
             Unit(200, 100+i*70, "teamA", units_database["soldier1"], database, move_algorithm="movementAI_Graph",
                  attack_algorithm="attackAI"))
@@ -64,8 +64,8 @@ def main():
         remove_units(database)
 
         ###DEBUG
-        #debug=False
-        debug=True
+        debug=False
+        #debug=True
         if debug==True:
             for u in database["units_teamA"].sprites():
                 pygame.draw.rect(screen,"white",u.hit_box_rect,1)
@@ -135,5 +135,5 @@ def main():
                             tmp.action = "ATTACK"
 
 
-#cProfile.run('main()')
-main()
+cProfile.run('main()')
+#main()

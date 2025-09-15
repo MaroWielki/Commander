@@ -189,7 +189,7 @@ class Unit(pygame.sprite.Sprite):
             self.graph_verts = get_graph_vers(self,self.database)
 
             if self.graph_edges is not None:
-                if randint(1,1)==1:
+                if randint(1,100)==1:
                     self.graph_edges = get_graph_edges(self,self.database)
             else:
                 self.graph_edges = get_graph_edges(self, self.database)
@@ -592,20 +592,22 @@ def get_graph_edges(unit,database):
             if vert_from != vert_to and (vert_to,vert_from) not in done_pair:
                 line = (vert_from.center, vert_to.center)
 
-
-
                 is_clear = True
+
+                line_ranges={"x":(min(line[0][0],line[1][0]),max(line[0][0],line[1][0])),"y":(min(line[0][1],line[1][1]),max(line[0][1],line[1][1]))}
 
                 for obstacle in graph_verts_verts_only[1:]+[x.hit_box_rect for x in all_objects]:
 
                     # PROBABLY NEED TO CHECK CORNERS NOT CENTRES
-                    # range can go from 1 to 10 or from 10 to one
-                    if obstacle.topleft[0] in range(line[0][0],line[1][0]) or obstacle.bottomright[0] in range(line[0][0],line[1][0]):
-                        if obstacle.topleft[1] in range(line[0][1],line[1][1]) or obstacle.bottomright[1] in range(line[0][1],line[1][1]):
 
+                    if obstacle.center[0] in range(line_ranges["x"][0],line_ranges["x"][1]):
+                        if obstacle.center[1] in range(line_ranges["y"][0],line_ranges["y"][1]):
                             if obstacle.clipline(line)!=() and obstacle not in [vert_to,vert_from,unit.move_last_visited_vert[0]] :
-                               is_clear = False
-                               debug_i += 1
+
+                                is_clear = False
+
+
+                        debug_i += 1
 
                 if is_clear:
 
