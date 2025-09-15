@@ -110,7 +110,7 @@ class Unit(pygame.sprite.Sprite):
         self.debug_lines=[]
         self.graph_verts=None
         self.graph_edges=None
-        self.id=id#str(uuid.uuid1())
+        self.id=str(uuid.uuid1())
         self.db = unit_data
         self.move_algorithm=move_algorithm
         self.attack_algorithm=attack_algorithm
@@ -594,7 +594,6 @@ def get_graph_edges(unit,database):
 
                 if is_clear:
                     unit.debug_lines.append(line)
-                    print(line)
                     weight=pygame.math.Vector2(line[0][0]-line[1][0],line[0][1]-line[1][1]).length()
                     edges.append((graph_verts_verts_only.index(vert_from),graph_verts_verts_only.index(vert_to),weight))
 

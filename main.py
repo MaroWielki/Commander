@@ -23,11 +23,24 @@ last_update_time = pygame.time.get_ticks()
 database["units_teamA"]=pygame.sprite.Group()
 database["units_teamB"]=pygame.sprite.Group()
 
-#database["units_teamA"].add(Unit(200,300,"teamA",units_database["soldier1"],database,move_algorithm="movementAI",attack_algorithm="attackAI",id="AAA"))
-database["units_teamA"].add(Unit(200,200,"teamA",units_database["soldier1"],database,move_algorithm="movementAI_Graph",attack_algorithm="attackAI",id="AAA"))
-database["units_teamA"].add(Unit(400,300,"teamA",units_database["soldier1"],database,id="AAAA"))
-database["units_teamB"].add(Unit(600,100,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI_B",id="BBB"))
-#database["units_teamB"].add(Unit(600,310,"teamB",units_database["soldier1"],database,id="BBB"))
+
+for i in range(5):
+    database["units_teamA"].add(
+        Unit(200, 100+i*70, "teamA", units_database["soldier1"], database, move_algorithm="movementAI_Graph",
+             attack_algorithm="attackAI"))
+    database["units_teamB"].add(
+        Unit(400, 100+i*70, "teamB", units_database["soldier1"], database, move_algorithm="movementAI_Graph",
+             attack_algorithm="attackAI"))
+
+
+
+
+# STANDING
+#database["units_teamA"].add(Unit(400,300,"teamA",units_database["soldier1"],database))
+
+## WSAD
+#database["units_teamB"].add(Unit(600,100,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI_B",id="BBB"))
+
 
 
 #

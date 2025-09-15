@@ -44,8 +44,11 @@ def movemendAI(unit, enemies_group: pygame.sprite.Group, teammates_group: pygame
 
 def movementAI_Graph(unit):
 
-    if unit.target_priority=="closest":
-        target_id=find_closest_enemy(unit, unit.database["units_"+unit.enemy_team]).id
+    ret = None
+    tmp=find_closest_enemy(unit, unit.database["units_"+unit.enemy_team])
+    if unit.target_priority=="closest" and tmp is not None:
+
+        target_id=tmp.id
 
         cantidat=[]
         for i in range(0,len(unit.graph_verts)):
@@ -76,21 +79,21 @@ def movementAI_Graph(unit):
 
         unit.move_target_finish = unit.graph_verts[target_index][0].center
         shortest_path = unit.graph.get_shortest_paths(0, to=target_index, weights=unit.graph.es["weights"], output="vpath")
-    print(" ")
+
     # print(unit.graph_verts)
     # print(unit.graph_edges)
     # print(shortest_path)
     # print(unit.graph_verts[i][0])
-    for x in shortest_path[0]:
-        print(unit.graph_verts[x],)
+    #for x in shortest_path[0]:
+    #   print(unit.graph_verts[x],)
 
-    if len(shortest_path[0])==0:
-        ret = unit.move_target_finish
-    else:
-        if len(shortest_path[0])==1:
-            ret = unit.graph_verts[shortest_path[0][0]][0].center
+        if len(shortest_path[0])==0:
+            ret = unit.move_target_finish
         else:
-            ret = unit.graph_verts[shortest_path[0][1]][0].center
+            if len(shortest_path[0])==1:
+                ret = unit.graph_verts[shortest_path[0][0]][0].center
+            else:
+                ret = unit.graph_verts[shortest_path[0][1]][0].center
     return ret
 
 
