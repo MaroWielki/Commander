@@ -1,6 +1,6 @@
 from os import spawnl
 import igraph as ig
-
+from random import randint
 import pygame
 from data import *
 from math import floor
@@ -187,7 +187,13 @@ class Unit(pygame.sprite.Sprite):
 
         if self.move_algorithm=="movementAI_Graph":
             self.graph_verts = get_graph_vers(self,self.database)
-            self.graph_edges = get_graph_edges(self,self.database)
+
+            if self.graph_edges is not None:
+                if randint(1,1)==1:
+                    self.graph_edges = get_graph_edges(self,self.database)
+            else:
+                self.graph_edges = get_graph_edges(self, self.database)
+
             self.graph=ig.Graph([(x[0],x[1]) for x in self.graph_edges])
             self.graph.es["weights"] = [x[2] for x in self.graph_edges]
 
@@ -569,33 +575,48 @@ def get_graph_vers(unit,database):
 
 
 def get_graph_edges(unit,database):
+
     edges=[]
     all_objects=get_all_objects_except(database,exclude=unit)
     unit.debug_lines=[]
     starting_vert=unit.graph_verts[0][0]
     graph_verts_verts_only=[x[0] for x in unit.graph_verts]
 
+    #print("graph_verts_verts_only",len(graph_verts_verts_only))
+    #print("all_objects",len(all_objects))
+    debug_i=0
+    done_pair=[]
     for vert_from in graph_verts_verts_only:
         for vert_to in graph_verts_verts_only:
 
-            if vert_from != vert_to:
+            if vert_from != vert_to and (vert_to,vert_from) not in done_pair:
                 line = (vert_from.center, vert_to.center)
+
+
+
                 is_clear = True
 
-                deb_i=0
                 for obstacle in graph_verts_verts_only[1:]+[x.hit_box_rect for x in all_objects]:
 
-                    #unit.debug_lines.append(line)
+                    # PROBABLY NEED TO CHECK CORNERS NOT CENTRES
+                    # range can go from 1 to 10 or from 10 to one
+                    if obstacle.topleft[0] in range(line[0][0],line[1][0]) or obstacle.bottomright[0] in range(line[0][0],line[1][0]):
+                        if obstacle.topleft[1] in range(line[0][1],line[1][1]) or obstacle.bottomright[1] in range(line[0][1],line[1][1]):
 
-                    if obstacle.clipline(line)!=() and obstacle not in [vert_to,vert_from,unit.move_last_visited_vert[0]] :
-                        is_clear = False
-
-                    deb_i += 1
+                            if obstacle.clipline(line)!=() and obstacle not in [vert_to,vert_from,unit.move_last_visited_vert[0]] :
+                               is_clear = False
+                               debug_i += 1
 
                 if is_clear:
+
                     unit.debug_lines.append(line)
                     weight=pygame.math.Vector2(line[0][0]-line[1][0],line[0][1]-line[1][1]).length()
                     edges.append((graph_verts_verts_only.index(vert_from),graph_verts_verts_only.index(vert_to),weight))
+
+            done_pair.append((vert_from, vert_to))
+    print(debug_i)
+
+
 
     return edges
 

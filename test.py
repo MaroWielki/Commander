@@ -1,5 +1,2 @@
 
-
-a="LEFTDOWN"
-
-print("LEFTa" in a)
+print( 4 in range(10,1))
