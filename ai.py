@@ -59,14 +59,17 @@ def movementAI_Graph(unit):
                     cantidat.append(i)
                 #target_index=i
 
-        cand_plus_road_length=[]
+        cand_plus_road_length=[(cantidat[0],9999)]
         for cand in cantidat:
             #shortest_path = unit.graph.get_shortest_paths(0, to=cand, weights=unit.graph.es["weights"],output="vpath")
-            shortest_path = unit.graph.get_shortest_paths(0, to=cand, weights=unit.graph.es["weights"], output="epath")
-            distance=0
-            for e in shortest_path[0]:
-                distance += unit.graph.es[e]["weights"]
-            cand_plus_road_length.append((cand,distance))
+            try:
+                shortest_path = unit.graph.get_shortest_paths(0, to=cand, weights=unit.graph.es["weights"], output="epath")
+                distance=0
+                for e in shortest_path[0]:
+                    distance += unit.graph.es[e]["weights"]
+                cand_plus_road_length.append((cand,distance))
+            except:
+                print("Error during shortest path calculation")
 
         min_distance=min(x[1] for x in cand_plus_road_length)
         target_index=[x[0] for x in cand_plus_road_length if x[1]==min_distance][0]

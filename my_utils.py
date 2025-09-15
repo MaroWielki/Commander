@@ -298,13 +298,70 @@ class Unit(pygame.sprite.Sprite):
             tmp_rect.center=new_xy
             all_units_list=self.database["units_"+self.enemy_team].sprites()+self.database["units_"+self.team_name].sprites()
 
-
-
             if tmp_rect.collidelist([i.hit_box_rect for i in all_units_list if i.id!=self.id]) ==-1:
-
                 self.rect.center=new_xy
                 self.hit_box_rect.center=new_xy
+            # SLIDING
+            else:
+                if self.direction=="LEFTUP":
+                    new_xy = move_xy((self.rect.center), "LEFT", self.speed)
+                    tmp_rect = self.hit_box_rect.copy()
+                    tmp_rect.center = new_xy
+                    if tmp_rect.collidelist([i.hit_box_rect for i in all_units_list if i.id != self.id]) == -1:
+                        self.rect.center = new_xy
+                        self.hit_box_rect.center = new_xy
+                    else:
+                        new_xy = move_xy((self.rect.center), "UP", self.speed)
+                        tmp_rect = self.hit_box_rect.copy()
+                        tmp_rect.center = new_xy
+                        if tmp_rect.collidelist([i.hit_box_rect for i in all_units_list if i.id != self.id]) == -1:
+                            self.rect.center = new_xy
+                            self.hit_box_rect.center = new_xy
 
+                if self.direction=="LEFTDOWN":
+                    new_xy = move_xy((self.rect.center), "LEFT", self.speed)
+                    tmp_rect = self.hit_box_rect.copy()
+                    tmp_rect.center = new_xy
+                    if tmp_rect.collidelist([i.hit_box_rect for i in all_units_list if i.id != self.id]) == -1:
+                        self.rect.center = new_xy
+                        self.hit_box_rect.center = new_xy
+                    else:
+                        new_xy = move_xy((self.rect.center), "DOWN", self.speed)
+                        tmp_rect = self.hit_box_rect.copy()
+                        tmp_rect.center = new_xy
+                        if tmp_rect.collidelist([i.hit_box_rect for i in all_units_list if i.id != self.id]) == -1:
+                            self.rect.center = new_xy
+                            self.hit_box_rect.center = new_xy
+
+                if self.direction=="RIGHTDOWN":
+                    new_xy = move_xy((self.rect.center), "RIGHT", self.speed)
+                    tmp_rect = self.hit_box_rect.copy()
+                    tmp_rect.center = new_xy
+                    if tmp_rect.collidelist([i.hit_box_rect for i in all_units_list if i.id != self.id]) == -1:
+                        self.rect.center = new_xy
+                        self.hit_box_rect.center = new_xy
+                    else:
+                        new_xy = move_xy((self.rect.center), "DOWN", self.speed)
+                        tmp_rect = self.hit_box_rect.copy()
+                        tmp_rect.center = new_xy
+                        if tmp_rect.collidelist([i.hit_box_rect for i in all_units_list if i.id != self.id]) == -1:
+                            self.rect.center = new_xy
+                            self.hit_box_rect.center = new_xy
+
+                if self.direction=="RIGHTUP":
+                    new_xy = move_xy((self.rect.center), "RIGHT", self.speed)
+                    tmp_rect = self.hit_box_rect.copy()
+                    tmp_rect.center = new_xy
+                    if tmp_rect.collidelist([i.hit_box_rect for i in all_units_list if i.id != self.id]) == -1:
+                        self.rect.center = new_xy
+                        self.hit_box_rect.center = new_xy
+                    else:
+                        new_xy = move_xy((self.rect.center), "UP", self.speed)
+                        tmp_rect = self.hit_box_rect.copy()
+                        tmp_rect.center = new_xy
+                        if tmp_rect.collidelist([i.hit_box_rect for i in all_units_list if i.id != self.id]) == -1:
+                            self.rect.center = new_xy
+                            self.hit_box_rect.center = new_xy
 
 
 

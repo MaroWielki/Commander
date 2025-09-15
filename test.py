@@ -1,7 +1,5 @@
 
 
-a=[5,2,3,]
+a="LEFTDOWN"
 
-
-print(min(a))
-print(a.index(min(a)))
+print("LEFTa" in a)
