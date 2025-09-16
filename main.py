@@ -26,17 +26,17 @@ def main():
 
     for i in range(10):
         database["units_teamA"].add(
-            Unit(200, 100+i*70, "teamA", units_database["soldier1"], database, move_algorithm="movementAI_Graph",
+            Unit(200, 220+i*70, "teamA", units_database["soldier1"], database, move_algorithm="movementAI",
                  attack_algorithm="attackAI"))
         database["units_teamB"].add(
-            Unit(400, 100+i*70, "teamB", units_database["soldier1"], database, move_algorithm="movementAI_Graph",
+            Unit(500, 220+i*70, "teamB", units_database["soldier1"], database, move_algorithm="movementAI",
                  attack_algorithm="attackAI"))
 
     # Graph AI
     #Unit(200, 100 + i * 70, "teamA", units_database["soldier1"], database, move_algorithm="movementAI_Graph",attack_algorithm="attackAI"))
 
     # STANDING
-    #database["units_teamA"].add(Unit(400,300,"teamA",units_database["soldier1"],database))
+    database["units_teamA"].add(Unit(400,300,"teamA",units_database["soldier1"],database))
 
     ## WSAD
     #database["units_teamB"].add(Unit(600,100,"teamB",units_database["soldier1"],database,move_algorithm="movemendAI_B",id="BBB"))
@@ -135,5 +135,5 @@ def main():
                             tmp.action = "ATTACK"
 
 
-cProfile.run('main()')
-#main()
+#cProfile.run('main()')
+main()

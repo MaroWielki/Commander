@@ -7,6 +7,7 @@ from math import floor
 import uuid
 from ai import *
 from copy import deepcopy
+from time import time
 
 class RealFPS:
     def __init__(self,span):
@@ -189,7 +190,7 @@ class Unit(pygame.sprite.Sprite):
             self.graph_verts = get_graph_vers(self,self.database)
 
             if self.graph_edges is not None:
-                if randint(1,100)==1:
+                if randint(1,1)==1:
                     self.graph_edges = get_graph_edges(self,self.database)
             else:
                 self.graph_edges = get_graph_edges(self, self.database)
@@ -586,6 +587,8 @@ def get_graph_edges(unit,database):
     #print("all_objects",len(all_objects))
     debug_i=0
     done_pair=[]
+    t0=time()
+    print(len(graph_verts_verts_only),"LEN",len(graph_verts_verts_only[1:]+[x.hit_box_rect for x in all_objects]))
     for vert_from in graph_verts_verts_only:
         for vert_to in graph_verts_verts_only:
 
@@ -594,17 +597,19 @@ def get_graph_edges(unit,database):
 
                 is_clear = True
 
-                line_ranges={"x":(min(line[0][0],line[1][0]),max(line[0][0],line[1][0])),"y":(min(line[0][1],line[1][1]),max(line[0][1],line[1][1]))}
+                line_ranges=[(min(line[0][0],line[1][0]),max(line[0][0],line[1][0])),(min(line[0][1],line[1][1]),max(line[0][1],line[1][1]))]
 
                 for obstacle in graph_verts_verts_only[1:]+[x.hit_box_rect for x in all_objects]:
 
                     # PROBABLY NEED TO CHECK CORNERS NOT CENTRES
 
-                    if obstacle.center[0] in range(line_ranges["x"][0],line_ranges["x"][1]):
-                        if obstacle.center[1] in range(line_ranges["y"][0],line_ranges["y"][1]):
+                    if obstacle.center[0] in range(line_ranges[0][0],line_ranges[0][1]):
+                        if obstacle.center[1] in range(line_ranges[1][0],line_ranges[1][1]):
+
                             if obstacle.clipline(line)!=() and obstacle not in [vert_to,vert_from,unit.move_last_visited_vert[0]] :
 
                                 is_clear = False
+
 
 
                         debug_i += 1
@@ -616,7 +621,7 @@ def get_graph_edges(unit,database):
                     edges.append((graph_verts_verts_only.index(vert_from),graph_verts_verts_only.index(vert_to),weight))
 
             done_pair.append((vert_from, vert_to))
-    print(debug_i)
+    print(debug_i,time()-t0)
 
 
 
